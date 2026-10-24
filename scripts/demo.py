@@ -5,6 +5,7 @@ Usage: python -m scripts.demo   (or: make demo)
 """
 import argparse
 import asyncio
+import base64
 import json
 import logging
 import os
@@ -45,6 +46,31 @@ def c(text: str, code: str) -> str:
 
 def wrap(text: str, indent: str = "   ") -> str:
     return textwrap.fill(text, width=88, initial_indent=indent, subsequent_indent=indent)
+
+
+async def demo_screenshot_and_comments(client: httpx.AsyncClient) -> None:
+    img = lambda name: base64.b64encode((FIXTURES / "images" / name).read_bytes()).decode()
+    print(c("━" * 88, "90"))
+    print(c("5 · A screenshot of a headline, no caption at all", "1;34"))
+    start = (await client.post("/check/start", json={"image_base64": img("headline_5g.png"), "client": "script"})).json()
+    print(wrap(f"Text read from the image → claim: {start['claim']}"))
+    print(wrap(f"🤔 {start['question']}"))
+    r = (await client.post("/check/reveal", json={"check_id": start["check_id"], "guess": "not_sure"})).json()
+    emoji, code = VERDICT_STYLE[r["verdict"]]
+    print("   " + c(f"{emoji} {r['verdict'].upper()}", f"1;{code}") + f"  · confidence {r['confidence']}")
+    print(wrap(f"💡 {r['tip']}"))
+    print()
+    print(c("━" * 88, "90"))
+    print(c("6 · The comment section (screenshot of 5 comments)", "1;34"))
+    cm = (await client.post("/comments/check", json={"image_base64": img("comments_5g.png"), "client": "script"})).json()
+    icons = {"opinion": "💬", "question": "❔", "other": "▫️"}
+    vicons = {"false": ("🚩", "31"), "true": ("✅", "32"), "misleading": ("⚠️", "33"), "unverified": ("❓", "37")}
+    for x in cm["comments"]:
+        icon, code = vicons.get(x.get("verdict"), (icons.get(x["kind"], "▫️"), "0"))
+        print(wrap(f"{icon} “{x['text']}”"))
+        print("      " + c(x["label"], code))
+    print(wrap(f"💡 {cm['tip']}"))
+    print()
 
 
 def recorded_cases(folder: Path) -> list:
@@ -95,6 +121,8 @@ async def run(fixtures: Path, cases: list, llm_provider: str) -> None:
                 print(wrap(f"• {s['outlet']} [{s['stance']}{', fact-check' if s['is_claimreview'] else ''}]{quote}"))
             print(wrap(f"💡 {r['tip']}"))
             print()
+        if fixtures == FIXTURES:
+            await demo_screenshot_and_comments(client)
         health = (await client.get("/health")).json()
         print(c("━" * 88, "90"))
         print(f"Checks run: {health['stats']['checks']} · cache hits: {health['stats']['cache_hits']} · "
