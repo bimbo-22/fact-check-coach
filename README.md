@@ -95,7 +95,7 @@ The image includes the fixtures, so it runs in mock mode with no keys. Put real 
 
 | Setting | Values |
 |---|---|
-| `LLM_PROVIDER` | `watsonx` (IBM Granite, preferred), `anthropic` (fallback), `mock` |
+| `LLM_PROVIDER` | `ica` (IBM Consulting Advantage API, default model `ibm/granite-4-h-small`), `ollama` (open-source Granite 4.1 8B on your own machine, no key, nothing leaves the laptop), `watsonx`, `anthropic`, `mock` |
 | `SEARCH_PROVIDER` | `google_factcheck`, `tavily`, `brave`, `mock`. Tavily/Brave also query Google Fact Check if `GOOGLE_FACTCHECK_API_KEY` is set. |
 
 ### Telegram bot
@@ -144,7 +144,9 @@ The API address is configurable under *Settings* in the popup (default `http://l
 
 **Works today:** Telegram bot, Chrome extension, Instagram captions (best effort, with a paste fallback), 6-outlet search via Google Fact Check + Tavily/Brave, quote verification, verdict rules, coaching, cache, offline demo, Docker, 137 tests.
 
-**Not verified yet:** the watsonx, Anthropic, Google Fact Check, Tavily and Brave integrations are written and unit-tested against mocked HTTP. They have not yet been run with live keys.
+**Verified with real models (24 Oct 2026):** on the four demo cases, IBM Granite 4H Small (via ICA), Llama 3.3 70B, Claude Haiku 5.5 (via ICA) and Granite 4.1 8B (local, via Ollama) all gave the expected verdicts, and every quote they returned passed verification. Gemma 4 also got every verdict right, with one lower confidence. `make check-providers` re-runs the key checks.
+
+**Not verified yet:** the live search providers (Google Fact Check, Tavily, Brave) and the direct watsonx/Anthropic clients need keys we don't have yet. Reuters, AP and AFP block direct page fetches (401/403), so live runs rely on Tavily's page text for those three outlets.
 
 **Fixtures are synthetic.** The pages under `tests/fixtures/sources/` are labelled `[FIXTURE]` and are not real articles. Before the pitch, run the real demo claims live once and save the results as fixtures.
 
