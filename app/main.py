@@ -17,6 +17,7 @@ from app.search import make_search
 
 # Log only IDs, verdicts, counts and timings: never post text, usernames or chat IDs.
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+logging.getLogger("httpx").setLevel(logging.WARNING)  # httpx logs full URLs, incl. API keys
 log = logging.getLogger("fcc.api")
 
 
