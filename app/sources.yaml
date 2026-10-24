@@ -1,4 +1,4 @@
-# The ONLY outlets whose articles count as evidence.
+# The ONLY outlets whose articles count as evidence (13 since 2026-10-24; was 6).
 # Bias labels come from AllSides (perceived political lean, NOT accuracy).
 # bias_status: confirmed = seen on/through allsides.com on bias_checked date; unconfirmed = a human must check.
 bias_checked: "2026-10-24"
@@ -24,7 +24,7 @@ outlets:
     bias_note: "AllSides 2023 blind survey said Lean Left; a third-party list says Left. Check allsides.com."
   - id: afp
     name: AFP Fact Check
-    domains: [factcheck.afp.com]
+    domains: [factcheck.afp.com, factuel.afp.com]   # English + French editions
     path_hint: null
     type: fact_checker
     bias_label: Center
@@ -58,3 +58,68 @@ outlets:
     bias_source: AllSides
     bias_status: confirmed
     bias_note: "AllSides: Lean Left, low/initial confidence."
+
+  # ---- Added 2026-10-24: wider coverage of viral social posts, Europe/France, Africa, health & climate ----
+  - id: fullfact
+    name: Full Fact
+    domains: [fullfact.org]
+    path_hint: null
+    type: fact_checker
+    bias_label: Not checked yet
+    bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "UK independent fact-checker. Check its AllSides rating before the pitch."
+  - id: factcheckorg
+    name: FactCheck.org
+    domains: [factcheck.org]
+    path_hint: null
+    type: fact_checker
+    bias_label: Not checked yet
+    bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "US, Annenberg Public Policy Center. Check its AllSides rating before the pitch."
+  - id: leadstories
+    name: Lead Stories
+    domains: [leadstories.com]
+    path_hint: /hoax-alert/
+    type: fact_checker
+    bias_label: Not checked yet
+    bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "Specialises in viral social media posts. Check its AllSides rating before the pitch."
+  - id: usatoday
+    name: USA Today Fact Check
+    domains: [usatoday.com]
+    path_hint: /factcheck/
+    type: newspaper
+    bias_label: Not checked yet
+    bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "Large Instagram fact-checking desk. Check its AllSides rating before the pitch."
+  - id: france24
+    name: France 24 Truth or Fake
+    domains: [france24.com]
+    path_hint: /truth-or-fake
+    type: public_broadcaster
+    bias_label: Not checked yet
+    bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "Verifies viral images and videos; strong on France. Check its AllSides rating before the pitch."
+  - id: africacheck
+    name: Africa Check
+    domains: [africacheck.org]
+    path_hint: /fact-checks/
+    type: fact_checker
+    bias_label: Not checked yet
+    bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "Africa's first independent fact-checker. Check its AllSides rating before the pitch."
+  - id: sciencefeedback
+    name: Science Feedback
+    domains: [science.feedback.org, healthfeedback.org, climatefeedback.org]
+    path_hint: null
+    type: fact_checker
+    bias_label: Not checked yet
+    bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "Scientists review health and climate claims. Check its AllSides rating before the pitch."

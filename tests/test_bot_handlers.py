@@ -10,7 +10,8 @@ def reveal_payload(client, caption, guess="true"):
 def test_format_reveal_false_claim(client):
     out = format_reveal(reveal_payload(client, post("false_5g")["caption"]))
     assert "❌ <b>False</b>" in out
-    assert "4 of 6 outlets checked cover it; all 4 say it's false." in out
+    from app.outlets import all_outlets
+    assert f"4 of {len(all_outlets())} outlets checked cover it; all 4 say it's false." in out
     assert "💡 <b>Tip:</b>" in out
     assert "didn't match the source and was thrown out" in out
     assert out.count("• <a href=") <= 3

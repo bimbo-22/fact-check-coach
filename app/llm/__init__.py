@@ -2,11 +2,13 @@ from app.config import Settings
 from app.llm.base import LLMClient, LLMError
 
 
-def make_llm(settings: Settings) -> LLMClient:
+def make_llm(settings: Settings, role: str = "default") -> LLMClient:
+    """role="stance" may use a different model for reading long articles (ICA only)."""
     if settings.llm_provider == "ica":
         from app.llm.ica import IcaLLM
 
-        return IcaLLM(settings.ica_api_key, settings.ica_base_url, settings.ica_model)
+        model = settings.ica_stance_model if role == "stance" and settings.ica_stance_model else settings.ica_model
+        return IcaLLM(settings.ica_api_key, settings.ica_base_url, model)
     if settings.llm_provider == "ollama":
         from app.llm.ollama import OllamaLLM
 

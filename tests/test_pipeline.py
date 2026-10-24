@@ -1,3 +1,4 @@
+from app.outlets import all_outlets
 from tests.conftest import FIXTURES, ScriptedLLM, post
 
 
@@ -7,7 +8,7 @@ async def test_false_viral_caption(pipeline):
     assert (ev.verdict, ev.confidence) == ("false", "high")
     assert ev.agreement.contradicts == 4
     assert ev.agreement.supports == 0
-    assert ev.agreement.outlets_checked == 6
+    assert ev.agreement.outlets_checked == len(all_outlets())
     assert all(s.stance == "contradicts" for s in ev.sources)
     assert ev.sources[0].is_claimreview  # ClaimReview shown first
     assert out.question and "link in bio" in out.question
@@ -79,7 +80,7 @@ async def test_blocked_fetch_falls_back_to_search_provider_text(pipeline):
         name = "blocked"
 
         async def search(self, claim):
-            text = "Fact check. There is no evidence that 5G networks make people sick, experts say."
+            text = ("Fact check. There is no evidence that 5G networks make people sick, experts say. " * 5)
             return [SearchResult("https://www.reuters.com/fact-check/live-only/", "R", text=text),
                     SearchResult("https://apnews.com/article/live-only", "A", text=text)]
 
@@ -90,7 +91,7 @@ async def test_blocked_fetch_falls_back_to_search_provider_text(pipeline):
             return await super()._complete(task, system, user)
 
     pipeline.search = BlockedOutletSearch()
-    pipeline.llm = StanceFromText(FIXTURES)
+    pipeline.llm = pipeline.stance_llm = StanceFromText(FIXTURES)
     ev = (await pipeline.run(post("false_5g")["caption"])).evidence
     assert ev.verdict == "false" and ev.agreement.contradicts == 2 and ev.agreement.rejected_quotes == 0
 
@@ -113,7 +114,7 @@ async def test_unreachable_claimreview_is_read_from_its_structured_data(pipeline
             return await super()._complete(task, system, user)
 
     pipeline.search = ClaimReviewOnly()
-    pipeline.llm = Labeller(FIXTURES)
+    pipeline.llm = pipeline.stance_llm = Labeller(FIXTURES)
     ev = (await pipeline.run(post("false_5g")["caption"])).evidence
     assert (ev.verdict, ev.agreement.contradicts) == ("false", 1)
     assert ev.sources[0].rating == "False" and ev.sources[0].is_claimreview
@@ -138,3 +139,18 @@ async def test_explanation_with_invented_link_falls_back_to_template(pipeline):
     pipeline.llm = LinkyLLM(FIXTURES)
     ev = (await pipeline.run(post("false_5g")["caption"])).evidence
     assert "http" not in ev.explanation and ev.explanation.startswith("4 of the 4 trusted outlets")
+
+
+async def test_search_snippet_stubs_are_ignored(pipeline):
+    from app.search import SearchResult
+
+    class StubSearch:
+        name = "stub"
+
+        async def search(self, claim):  # Reuters via search: a 140-character paywall stub
+            return [SearchResult("https://www.reuters.com/fact-check/stub/", "R", text="Subscribe to read. " * 7)]
+
+    pipeline.search = StubSearch()
+    calls = pipeline.stance_llm.calls["stance"]
+    ev = (await pipeline.run(post("false_5g")["caption"])).evidence
+    assert ev.verdict == "unverified" and pipeline.stance_llm.calls["stance"] == calls

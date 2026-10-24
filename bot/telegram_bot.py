@@ -28,7 +28,7 @@ WELCOME = (
     "👋 <b>Fact-Check Coach</b>\n\n"
     "Send me a post you're not sure about: paste the caption, share an Instagram post straight to me, "
     "or send a <b>screenshot</b>.\n\n"
-    "Before I show you anything, I'll ask <b>you</b> to guess. Then you'll see what 6 named news outlets "
+    "Before I show you anything, I'll ask <b>you</b> to guess. Then you'll see what named fact-checkers and newsrooms "
     "say, with quotes checked word for word. The goal: you need me less every time.\n\n"
     "🗨 Want to know which comments to trust? Send /comments, then paste or screenshot them.\n\n"
     "🔒 I don't store your messages, your screenshots, your username or this chat."

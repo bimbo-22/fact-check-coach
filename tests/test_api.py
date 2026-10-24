@@ -7,9 +7,10 @@ def test_health(client):
     assert body["llm_provider"] == "mock" and body["search_provider"] == "mock"
 
 
-def test_sources_lists_six_outlets_with_bias_labels(client):
+def test_sources_lists_all_outlets_with_bias_labels(client):
+    from app.outlets import all_outlets
     body = client.get("/sources").json()
-    assert len(body["outlets"]) == 6
+    assert len(body["outlets"]) == len(all_outlets()) >= 6
     assert all(o["bias_label"] and o["bias_source"] for o in body["outlets"])
     assert "bias_checked" in body
 

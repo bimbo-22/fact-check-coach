@@ -14,7 +14,7 @@ from app.outlets import all_outlets, outlet_for_url
 log = logging.getLogger(__name__)
 
 MAX_PER_OUTLET = 2
-MAX_TOTAL = 12
+MAX_TOTAL = 16
 
 
 @dataclass

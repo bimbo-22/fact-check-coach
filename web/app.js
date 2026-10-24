@@ -122,7 +122,7 @@ async function checkPost(text) {
   const steps = [
     ...(imageB64 ? ["Reading the text in your screenshot"] : []),
     "Finding the claim",
-    "Searching six named newsrooms",
+    "Searching the named fact-checkers and newsrooms",
     "Checking every quote against its source",
     "Applying the verdict rules",
   ];
@@ -255,7 +255,7 @@ async function checkComments(text) {
   startWorking([
     ...(imageB64 ? ["Reading the comments in your screenshot"] : []),
     "Sorting opinions, questions and claims",
-    "Checking each claim against six newsrooms",
+    "Checking each claim against the named outlets",
     "Flagging misinformation",
   ]);
   status("");
@@ -341,6 +341,7 @@ async function loadSources() {
       card.append(b);
       grid.append(card);
     }
+    document.querySelectorAll("[data-outlet-count]").forEach((n) => { n.textContent = String(data.outlets.length); });
     $("bias-note").textContent = `Bias labels from ${data.outlets[0]?.bias_source || "AllSides"} (perceived political lean, not accuracy), checked ${data.bias_checked}.`;
   } catch (_) { /* section stays empty if the API is down */ }
 }

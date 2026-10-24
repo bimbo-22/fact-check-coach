@@ -35,7 +35,7 @@ def build_pipeline(settings: Settings) -> Pipeline:
     graph = (InstagramGraph(settings.instagram_access_token, settings.instagram_user_id)
              if settings.instagram_access_token and settings.instagram_user_id else None)
     return Pipeline(make_llm(settings), make_search(settings), HttpFetcher(), settings, vision=make_vision(settings),
-                    instagram_graph=graph)
+                    instagram_graph=graph, stance_llm=make_llm(settings, role="stance"))
 
 
 def image_bytes(b64: str | None) -> bytes | None:

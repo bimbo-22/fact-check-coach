@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fact-Check Coach</title>
-  <meta name="description" content="A fact-checker that trains you to need it less. Send an Instagram post or screenshot, guess first, then see what six named newsrooms say." />
+  <meta name="description" content="A fact-checker that trains you to need it less. Send an Instagram post or screenshot, guess first, then see what named fact-checkers and newsrooms say." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
@@ -29,7 +29,7 @@
       <div class="hero-text">
         <p class="eyebrow">Built for Instagram · IBM Responsible AI Hackathon</p>
         <h1>A fact-checker that trains you to <span class="grad">need it less.</span></h1>
-        <p class="lede">Send a post or a screenshot. <strong>Guess first.</strong> Then see what six named newsrooms say, with every quote checked word for word against the source.</p>
+        <p class="lede">Send a post or a screenshot. <strong>Guess first.</strong> Then see what <span data-outlet-count>13</span> named fact-checkers and newsrooms say, with every quote checked word for word against the source.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#try">Try it with a screenshot</a>
           <a class="btn btn-ghost" data-telegram href="#try">Use it in Telegram</a>
@@ -45,7 +45,7 @@
         <div class="phone">
           <img src="examples/looting-video.jpg" alt="" />
           <div class="chip chip-q">🤔 Before I show you: who posted this?</div>
-          <div class="chip chip-v"><span class="dot dot-false"></span> Check the source · 6 outlets</div>
+          <div class="chip chip-v"><span class="dot dot-false"></span> Checking <span data-outlet-count>13</span> outlets</div>
         </div>
         <img class="float float-1" src="examples/protest-meme.jpg" alt="" />
         <img class="float float-2" src="examples/paris-burning.jpg" alt="" />
@@ -70,7 +70,7 @@
         <li class="step">
           <span class="step-n">3</span>
           <h3>See the evidence</h3>
-          <p>What six named outlets say, with checked quotes and links. Then compare it with your guess, and get one tip you can use next time.</p>
+          <p>What <span data-outlet-count>13</span> named outlets say, with checked quotes and links. Then compare it with your guess, and get one tip you can use next time.</p>
         </li>
         <li class="step step-accent">
           <span class="step-n">+</span>
@@ -161,7 +161,7 @@
 
     <!-- SOURCES -->
     <section id="sources" class="section">
-      <h2>Six named outlets. One vote each.</h2>
+      <h2><span data-outlet-count>13</span> named outlets. One vote each.</h2>
       <p class="section-lede">Only these newsrooms count as evidence. Ten articles from one outlet still count once, and a published fact-check counts double. We show their political lean openly.</p>
       <div class="outlets" id="outlets"></div>
       <p class="fineprint" id="bias-note">Bias labels from AllSides, which rates perceived political lean, not accuracy.</p>
@@ -181,7 +181,7 @@
       <div class="limits">
         <h3>Honest limits</h3>
         <ul>
-          <li>Six English-language, mostly US/UK outlets, so local or non-English claims often come back “unverified”.</li>
+          <li>Our outlets are mostly English-language (plus French) and Western, so many local or non-English claims come back “unverified”.</li>
           <li>We read the <b>text</b> in screenshots. A photo or video without text (like an AI-made image) isn't analysed yet.</li>
           <li>Instagram doesn't let apps read posts from a link, so a screenshot or the pasted caption is needed.</li>
           <li>Our outlets lean centre to centre-left, and we say so.</li>

@@ -37,9 +37,9 @@ def test_rejects_lookalikes(url):
     assert outlet_for_url(url) is None
 
 
-def test_sources_yaml_has_exactly_six_complete_outlets():
+def test_sources_yaml_outlets_are_complete():
     bias_checked, outlets = load_sources()
-    assert len(outlets) == 6
+    assert len(outlets) >= 6
     assert bias_checked
     for o in outlets:
         assert o.id and o.name and o.domains and o.type and o.bias_label and o.bias_source

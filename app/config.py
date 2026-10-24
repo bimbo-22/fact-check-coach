@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     ica_api_key: str = ""
     ica_base_url: str = "https://api.servicesessentials.ibm.com/v1"
     ica_model: str = "ibm/granite-4-h-small"
+    # Reading long articles: measured better recall than Granite on real fact-checks (see README)
+    ica_stance_model: str = "meta-llama/llama-3-3-70b-instruct"
 
     # Screenshot reading. auto = same service as LLM_PROVIDER (ica/ollama), else offline mock.
     vision_provider: Literal["auto", "mock", "ica", "ollama"] = "auto"

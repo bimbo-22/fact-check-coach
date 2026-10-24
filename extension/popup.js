@@ -27,6 +27,7 @@ function el(tag, text, className) {
 }
 
 function show(view) {
+  if ($("note")) $("note").hidden = true;
   for (const id of ["input-view", "start-view", "reveal-view", "comments-view"]) $(id).hidden = id !== view;
 }
 
@@ -73,7 +74,7 @@ function fileToBase64(file) {
 }
 
 async function startCheck(text, url, imageB64 = null, imageUrl = null) {
-  status(imageB64 || imageUrl ? "Reading the screenshot, then checking six outlets…" : "Checking six outlets…");
+  status(imageB64 || imageUrl ? "Reading the screenshot, then checking the outlets…" : "Checking the outlets…");
   try {
     const p = await api("/check/start", {
       text: text || "", url: url || null, image_base64: imageB64, image_url: imageUrl, client: "extension",
@@ -82,7 +83,7 @@ async function startCheck(text, url, imageB64 = null, imageUrl = null) {
     if (p.needs_text) {
       pendingUrl = url;
       show("input-view");
-      status(p.note);
+      renderNote(p.note);
       $("post-text").focus();
       return;
     }
@@ -170,6 +171,20 @@ function agreementText(verdict, a) {
   return `${head}: ${say(a.contradicts)} it's false, ${say(a.supports)} it's true.`;
 }
 
+function renderNote(note) {
+  // "Can't check this" is coaching, not an error: show the self-check steps as a list.
+  const box = $("note");
+  box.replaceChildren();
+  const [first, ...rest] = note.split(/(?=\d\) )/);
+  box.append(el("p", first.trim()));
+  if (rest.length) {
+    const list = el("ol");
+    rest.forEach((r) => list.append(el("li", r.replace(/^\d\)\s*/, "").replace(/,\s*$/, "").trim())));
+    box.append(list);
+  }
+  box.hidden = false;
+}
+
 function renderReveal(p, guess) {
   const view = $("reveal-view");
   view.replaceChildren();
@@ -182,7 +197,15 @@ function renderReveal(p, guess) {
   view.append(el("p", `You guessed: ${guess.replace("_", " ")}`, "muted"));
   if (p.guess_feedback) view.append(el("p", `🎯 ${p.guess_feedback}`, "feedback"));
   view.append(el("p", p.explanation));
-  if (p.verdict !== "opinion") view.append(el("p", `📊 ${agreementText(p.verdict, p.agreement)}`, "agreement"));
+  if (p.verdict !== "opinion") {
+    const a = p.agreement;
+    const meter = el("div", null, "meter");
+    meter.setAttribute("aria-hidden", "true");
+    for (let i = 0; i < a.outlets_checked; i += 1) {
+      meter.append(el("span", null, i < a.contradicts ? "m-con" : i < a.contradicts + a.supports ? "m-sup" : ""));
+    }
+    view.append(meter, el("p", `📊 ${agreementText(p.verdict, a)}`, "agreement"));
+  }
 
   if (p.sources.length) {
     view.append(el("p", "Sources", "label"));

@@ -36,7 +36,7 @@ async def check_search(name: str, provider) -> None:
         raw = await provider.search(SAMPLE_CLAIM)
         kept = filter_and_rank(raw)
         with_text = sum(1 for r in kept if r.text)
-        line(True, name, f"{len(raw)} results, {len(kept)} from the 6 outlets, {with_text} with page text")
+        line(True, name, f"{len(raw)} results, {len(kept)} from our outlets, {with_text} with page text")
     except httpx.HTTPStatusError as e:
         line(False, name, f"HTTP {e.response.status_code}")
     except Exception as e:

@@ -1,4 +1,4 @@
-"""Build a labelled set of REAL Instagram posts from fact-check articles by our six outlets.
+"""Build a labelled set of REAL Instagram posts from fact-check articles by our whitelisted outlets.
 
 We never touch Instagram's API or scrape it. Fact-checkers already document viral Instagram posts: their
 articles quote what the post claimed, often link it, and give a verdict. For each article we keep:

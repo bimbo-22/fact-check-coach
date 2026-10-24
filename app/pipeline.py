@@ -9,6 +9,8 @@ from app.cache import TTLCache, text_hash
 from app.claim_extractor import extract_claim
 from app.config import Settings
 from app.fetcher import MAX_SOURCE_CHARS, Fetcher
+
+MIN_SOURCE_CHARS = 300  # paywall stubs (e.g. Reuters via search snippets) can't support a verdict
 from app import comments as cm
 from app.instagram import HASHTAGS_ONLY_MSG, NEEDS_TEXT_MSG, find_instagram_url, get_caption, is_reel_url
 from app.instagram_graph import InstagramGraph
@@ -60,8 +62,9 @@ class CheckOutcome:
 class Pipeline:
     def __init__(self, llm: LLMClient, search: SearchProvider, fetcher: Fetcher, settings: Settings,
                  instagram_fetch=get_caption, vision: Vision | None = None,
-                 instagram_graph: InstagramGraph | None = None) -> None:
+                 instagram_graph: InstagramGraph | None = None, stance_llm: LLMClient | None = None) -> None:
         self.llm = llm
+        self.stance_llm = stance_llm or llm
         self.vision = vision
         self.instagram_graph = instagram_graph
         self.search = search
@@ -171,7 +174,7 @@ class Pipeline:
         return await self.check_comments("\n".join(" ".join(t.split()) for t in texts))
 
     async def check_comments(self, text: str, image: bytes | None = None) -> CommentsResponse:
-        """Label each comment; check up to MAX_CLAIMS_CHECKED distinct claims against the six outlets."""
+        """Label each comment; check up to MAX_CLAIMS_CHECKED distinct claims against the whitelisted outlets."""
         self.stats["comment_checks"] += 1
         image_text = await self.read_image(image)
         raw = "\n".join(t for t in ((text or "").strip(), image_text) if t)
@@ -220,7 +223,7 @@ class Pipeline:
         for r in results:
             if r.url in pages:
                 continue
-            if r.text:  # outlet blocked our fetch → fall back to the search provider's copy of the page
+            if r.text and len(r.text.strip()) >= MIN_SOURCE_CHARS:  # blocked fetch → search provider's copy
                 pages[r.url] = r.text[:MAX_SOURCE_CHARS]
             elif r.is_claimreview and r.rating and r.reviewed_claim:
                 # Page unreachable: the publisher's structured ClaimReview is the source text. The LLM still
@@ -228,8 +231,11 @@ class Pipeline:
                 pages[r.url] = (f"{outlet_by_id(r.outlet_id).name} fact-check. "
                                 f"Claim reviewed: \"{r.reviewed_claim}\". Rating: {r.rating}.")
 
+        # The headline goes first: fact-check titles often state the verdict. Quotes are verified against
+        # exactly this text, so a quoted title is still a real quote from the source.
+        pages = {u: f"{next(r.title for r in results if r.url == u)}\n\n{t}" for u, t in pages.items()}
         fetched = [r for r in results if r.url in pages]
-        labels = await asyncio.gather(*(label_source(self.llm, claim, r.url, pages[r.url]) for r in fetched))
+        labels = await asyncio.gather(*(label_source(self.stance_llm, claim, r.url, pages[r.url]) for r in fetched))
 
         evidence: list[Evidence] = []
         rows: list[tuple[str, SourceOut]] = []
