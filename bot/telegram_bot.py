@@ -269,7 +269,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not text and not url and not image_b64:
         await msg.reply_text("Send me a caption, an Instagram link or a screenshot to check.")
         return
-    await msg.chat.send_action("typing")
+    loading = await msg.reply_text("⏳ Reading your screenshot and checking the sources… (about 15 seconds)"
+                                   if image_b64 else "⏳ Checking the sources… (about 15 seconds)")
     try:
         payload = await api.start(text, url, image_b64)
     except httpx.HTTPStatusError as err:
@@ -281,6 +282,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         await msg.reply_text("I can't reach the checker right now. Please try again in a minute.")
         return
 
+    await loading.delete()
     if payload.get("needs_text"):
         if url:
             context.chat_data["pending_ig"] = (url, time.time())
@@ -289,8 +291,14 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not payload["checkable"]:
         await msg.reply_text(format_opinion(payload), parse_mode=ParseMode.HTML)
         return
-    await msg.reply_text(format_start(payload), parse_mode=ParseMode.HTML,
-                         reply_markup=guess_keyboard(payload["check_id"]))
+    # Bot: give the answer straight away (the extension and website keep the guess-first flow).
+    r = await api.reveal(payload["check_id"], "not_sure")
+    if r.status_code != 200:
+        await msg.reply_text("Something went wrong on my side. Please try again.")
+        return
+    result = {**r.json(), "guess_feedback": None}
+    await msg.reply_text(read_line(payload) + format_reveal(result), parse_mode=ParseMode.HTML,
+                         disable_web_page_preview=True, reply_markup=comments_keyboard())
 
 
 async def on_guess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

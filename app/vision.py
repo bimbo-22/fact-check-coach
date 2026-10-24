@@ -102,7 +102,10 @@ class Vision(ABC):
             log.warning("vision transcription failed: %s", type(e).__name__)
             return None
         text = scrub_ui((raw or "").replace("```", ""))
-        return None if not text or text.strip() == NO_TEXT else text
+        # A photo with only a stray label ("Paris, France") has no claim to read: treat as no text.
+        if not text or NO_TEXT in text or len(text.split()) < 4:
+            return None
+        return text
 
     @abstractmethod
     async def _transcribe(self, image: bytes, mime: str) -> str: ...
