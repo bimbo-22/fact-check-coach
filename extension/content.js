@@ -43,7 +43,7 @@
   }
 
   function scoreOf(text) {
-    if (!text || text.length < 12) return null;
+    if (!text || text.length < 12) return [];  // short or hidden caption: still show a "check this post" badge
     return FLAGS.filter((f) => f.test(text));
   }
 
@@ -68,7 +68,7 @@
     if (article.hasAttribute(DONE)) return;
     const caption = captionOf(article);
     const flags = scoreOf(caption);
-    if (!flags) return;
+    if (!caption && !imageOf(article)) return;  // nothing to check in this block
     article.setAttribute(DONE, "1");
 
     const host = el("div");
@@ -79,7 +79,7 @@
     style.href = chrome.runtime.getURL("content.css");
     root.append(style);
 
-    const [cls, text] = badgeLevel(flags.length);
+    const [cls, text] = caption.length < 12 ? ["fcc-ok", "🧭 Check this post"] : badgeLevel(flags.length);
     const badge = el("button", text, `fcc-badge ${cls}`);
     badge.title = "Warning signs in how this post is written. Not a verdict: tap to see them, or fact-check it.";
     const panel = el("div", null, "fcc-panel");
@@ -164,9 +164,27 @@
     panel.append(el("p", `💡 ${r.tip}`, "fcc-tip"), el("p", r.disclaimer, "fcc-fine"));
   }
 
+  function postBlocks() {
+    // Feed posts are <article>s. Single post pages and Reels may not be: fall back to the post dialog or main.
+    const articles = [...document.querySelectorAll("article")];
+    if (articles.length) return articles;
+    if (/\/(p|reel|reels|tv)\//.test(location.pathname)) {
+      const box = document.querySelector('div[role="dialog"]') || document.querySelector("main");
+      return box ? [box] : [];
+    }
+    return [];
+  }
+
+  let lastCount = -1;
   function scan() {
     if (!enabled) return;
-    document.querySelectorAll("article").forEach(attach);
+    const blocks = postBlocks();
+    blocks.forEach(attach);
+    const n = document.querySelectorAll(".fcc-host").length;
+    if (n !== lastCount) {
+      lastCount = n;
+      console.info(`[Fact-Check Coach] ${blocks.length} post block(s) found, ${n} badge(s) shown`);
+    }
   }
 
   function removeAll() {
