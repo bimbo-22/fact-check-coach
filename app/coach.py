@@ -47,6 +47,8 @@ def agreement_line(verdict: str, a: Agreement) -> str:
         return f"{a.supports} of the {covering} outlets that cover it say it's true"
     if verdict == "misleading":
         return f"the outlets disagree: {a.supports} back it, {a.contradicts} contradict it"
+    if covering == 0:
+        return f"none of the {a.outlets_checked} outlets we checked cover it"
     return f"only {covering} of {a.outlets_checked} outlets we checked cover it"
 
 

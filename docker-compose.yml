@@ -1,0 +1,35 @@
+# docker compose up -d api          → API on http://localhost:8000 (MOCK mode unless .env says otherwise)
+# docker compose --profile bot up -d → API + Telegram bot (needs TELEGRAM_BOT_TOKEN in .env)
+# Values come from .env if present (Compose reads it automatically); otherwise the defaults below.
+x-env: &env
+  LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+  SEARCH_PROVIDER: ${SEARCH_PROVIDER:-mock}
+  WATSONX_API_KEY: ${WATSONX_API_KEY:-}
+  WATSONX_PROJECT_ID: ${WATSONX_PROJECT_ID:-}
+  WATSONX_URL: ${WATSONX_URL:-https://us-south.ml.cloud.ibm.com}
+  WATSONX_MODEL_ID: ${WATSONX_MODEL_ID:-ibm/granite-3-8b-instruct}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-haiku-5-5}
+  GOOGLE_FACTCHECK_API_KEY: ${GOOGLE_FACTCHECK_API_KEY:-}
+  TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+  BRAVE_API_KEY: ${BRAVE_API_KEY:-}
+
+services:
+  api:
+    build: { context: ., target: runtime }
+    image: fact-check-coach:latest
+    environment: *env
+    ports: ["8000:8000"]
+    restart: unless-stopped
+
+  bot:
+    image: fact-check-coach:latest
+    profiles: [bot]
+    command: ["python", "-m", "bot.telegram_bot"]
+    environment:
+      <<: *env
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      API_BASE_URL: http://api:8000
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped

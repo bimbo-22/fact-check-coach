@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from app.config import Settings  # noqa: E402
 from app.fetcher import FixtureFetcher  # noqa: E402
-from app.instagram import CaptionResult, parse_og, is_reel_url  # noqa: E402
+from app.instagram import make_fixture_fetch  # noqa: E402
 from app.llm.base import LLMClient  # noqa: E402
 from app.llm.mock import MockLLM  # noqa: E402
 from app.main import create_app  # noqa: E402
@@ -37,15 +37,7 @@ def post(name: str) -> dict:
     return json.loads((FIXTURES / "instagram" / f"{name}.json").read_text())
 
 
-async def fixture_instagram_fetch(url: str) -> CaptionResult:
-    """Offline stand-in for instagram.get_caption: serves saved og: HTML by post URL."""
-    for f in (FIXTURES / "instagram").glob("*.json"):
-        p = json.loads(f.read_text())
-        og = FIXTURES / "instagram" / f"{f.stem}.og.html"
-        if p.get("url", "").rstrip("/") == url.rstrip("/") and og.exists():
-            caption, posted = parse_og(og.read_text())
-            return CaptionResult(caption, posted, is_reel_url(url))
-    return CaptionResult(None, None, is_reel_url(url))
+fixture_instagram_fetch = make_fixture_fetch(FIXTURES)
 
 
 @pytest.fixture

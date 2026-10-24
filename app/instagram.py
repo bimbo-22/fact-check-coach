@@ -4,10 +4,12 @@ We only read the og: meta tags of the public post page. No login, no scraping li
 no comments, no profile. Username and like/comment counts are dropped immediately.
 """
 import html
+import json
 import logging
 import re
 from dataclasses import dataclass
 from datetime import date, datetime
+from pathlib import Path
 
 import httpx
 
@@ -80,3 +82,21 @@ async def get_caption(url: str, client: httpx.AsyncClient | None = None) -> Capt
     finally:
         if own:
             await client.aclose()
+
+
+def make_fixture_fetch(fixtures_dir: Path):
+    """Offline stand-in for get_caption (MOCK mode): serves saved og: HTML by post URL."""
+    folder = Path(fixtures_dir) / "instagram"
+    pages = {}
+    for f in folder.glob("*.json"):
+        url = json.loads(f.read_text()).get("url")
+        og = folder / f"{f.stem}.og.html"
+        if url and og.exists():
+            pages[url.rstrip("/")] = og.read_text()
+
+    async def fetch(url: str) -> CaptionResult:
+        page = pages.get(url.rstrip("/"))
+        caption, posted = parse_og(page) if page else (None, None)
+        return CaptionResult(caption, posted, is_reel_url(url))
+
+    return fetch

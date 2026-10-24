@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.coach import guess_feedback
 from app.config import Settings, get_settings
 from app.fetcher import FixtureFetcher, HttpFetcher
+from app.instagram import make_fixture_fetch
 from app.cache import CheckStore
 from app.llm import make_llm
 from app.models import (CheckRequest, RevealRequest, RevealResponse, StartResponse)
@@ -22,8 +23,10 @@ log = logging.getLogger("fcc.api")
 
 
 def build_pipeline(settings: Settings) -> Pipeline:
-    fetcher = FixtureFetcher(settings.fixtures_dir) if settings.search_provider == "mock" else HttpFetcher()
-    return Pipeline(make_llm(settings), make_search(settings), fetcher, settings)
+    if settings.search_provider == "mock":  # fully offline: saved source pages and Instagram previews
+        return Pipeline(make_llm(settings), make_search(settings), FixtureFetcher(settings.fixtures_dir), settings,
+                        instagram_fetch=make_fixture_fetch(settings.fixtures_dir))
+    return Pipeline(make_llm(settings), make_search(settings), HttpFetcher(), settings)
 
 
 def to_reveal(outcome: CheckOutcome, guess: str | None) -> RevealResponse:
