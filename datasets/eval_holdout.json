@@ -5,31 +5,31 @@
     "llm": "ica",
     "model": "ibm/granite-4-h-small",
     "search": "tavily",
-    "exact_match": 0.3,
-    "misinformation_flagged": "18/49",
+    "exact_match": 0.44,
+    "misinformation_flagged": "25/49",
     "dangerous_errors": 0,
-    "abstained": 32,
-    "rejected_quotes_total": 4,
-    "median_seconds": 12.3,
+    "abstained": 25,
+    "rejected_quotes_total": 11,
+    "median_seconds": 13.2,
     "confusion": [
       [
-        "false→unverified",
-        23
+        "false→false",
+        22
       ],
       [
-        "false→false",
-        15
+        "false→unverified",
+        17
       ],
       [
         "misleading→unverified",
         5
       ],
       [
-        "false→developing",
-        3
+        "misleading→false",
+        2
       ],
       [
-        "misleading→false",
+        "false→developing",
         2
       ],
       [
@@ -41,7 +41,7 @@
         1
       ]
     ],
-    "minutes": 17.4
+    "minutes": 14.3
   },
   "rows": [
     {
@@ -49,10 +49,11 @@
       "label": "false",
       "verdict": "false",
       "confidence": "medium",
-      "seconds": 13.9,
+      "seconds": 11.6,
       "outlets": [
         "Snopes",
-        "FactCheck.org"
+        "FactCheck.org",
+        "USA Today Fact Check"
       ],
       "rejected_quotes": 1,
       "claim": "Costco sells beef from cattle injected with mRNA vaccines"
@@ -60,27 +61,36 @@
     {
       "id": "ig002",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 14.1,
+      "verdict": "false",
+      "confidence": "high",
+      "seconds": 21.2,
       "outlets": [
-        "FactCheck.org"
+        "Reuters Fact Check",
+        "AFP Fact Check",
+        "PolitiFact",
+        "FactCheck.org",
+        "Lead Stories",
+        "Science Feedback"
       ],
-      "rejected_quotes": 0,
+      "rejected_quotes": 1,
       "claim": "Covid vaccines cause a 50% excess infant mortality rate"
     },
     {
       "id": "ig003",
       "label": "false",
       "verdict": "false",
-      "confidence": "medium",
-      "seconds": 12.3,
+      "confidence": "high",
+      "seconds": 20.5,
       "outlets": [
+        "Reuters Fact Check",
+        "AP Fact Check",
+        "AP Fact Check",
         "AFP Fact Check",
         "BBC Verify",
-        "BBC Verify",
         "Full Fact",
-        "Full Fact"
+        "Full Fact",
+        "FactCheck.org",
+        "FactCheck.org"
       ],
       "rejected_quotes": 0,
       "claim": "Covid vaccines alter your DNA"
@@ -90,7 +100,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 6.3,
+      "seconds": 3.6,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "Celery juice can cure chronic illnesses such as fibromyalgia, cancer and diabetes"
@@ -98,11 +108,15 @@
     {
       "id": "ig005",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 8.3,
-      "outlets": [],
-      "rejected_quotes": 0,
+      "verdict": "false",
+      "confidence": "medium",
+      "seconds": 15.7,
+      "outlets": [
+        "BBC Verify",
+        "USA Today Fact Check",
+        "USA Today Fact Check"
+      ],
+      "rejected_quotes": 1,
       "claim": "Cancer is a survival mechanism and most people die from cancer treatment, not the disease itself"
     },
     {
@@ -110,7 +124,7 @@
       "label": "misleading",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 14.7,
+      "seconds": 9.5,
       "outlets": [
         "BBC Verify",
         "BBC Verify"
@@ -123,11 +137,11 @@
       "label": "false",
       "verdict": "false",
       "confidence": "medium",
-      "seconds": 13.8,
+      "seconds": 10.9,
       "outlets": [
         "AP Fact Check",
         "BBC Verify",
-        "BBC Verify"
+        "USA Today Fact Check"
       ],
       "rejected_quotes": 0,
       "claim": "Belle Gibson claimed she cured her inoperable brain cancer through healthy eating"
@@ -137,13 +151,15 @@
       "label": "false",
       "verdict": "false",
       "confidence": "high",
-      "seconds": 18.0,
+      "seconds": 17.3,
       "outlets": [
+        "Reuters Fact Check",
         "AFP Fact Check",
         "AFP Fact Check",
         "BBC Verify",
         "Full Fact",
         "Full Fact",
+        "USA Today Fact Check",
         "USA Today Fact Check"
       ],
       "rejected_quotes": 0,
@@ -154,8 +170,9 @@
       "label": "false",
       "verdict": "false",
       "confidence": "high",
-      "seconds": 12.4,
+      "seconds": 20.1,
       "outlets": [
+        "Reuters Fact Check",
         "AFP Fact Check",
         "AFP Fact Check",
         "BBC Verify",
@@ -170,11 +187,19 @@
     {
       "id": "ig010",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 182.4,
-      "outlets": [],
-      "rejected_quotes": 1,
+      "verdict": "false",
+      "confidence": "high",
+      "seconds": 17.6,
+      "outlets": [
+        "Reuters Fact Check",
+        "AP Fact Check",
+        "BBC Verify",
+        "Snopes",
+        "Snopes",
+        "USA Today Fact Check",
+        "USA Today Fact Check"
+      ],
+      "rejected_quotes": 2,
       "claim": "Greta Thunberg said, “the climate crisis doesn’t exist.”"
     },
     {
@@ -182,7 +207,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 10.4,
+      "seconds": 13.7,
       "outlets": [
         "Reuters Fact Check"
       ],
@@ -194,7 +219,7 @@
       "label": "misleading",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 10.9,
+      "seconds": 10.2,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "Trump broke up a migrant caravan in Mexico, Russian President Vladimir Putin is ready to end the war in Ukraine, Hamas called for an end to war in Gaza, the stock market hit record highs"
@@ -204,7 +229,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 12.3,
+      "seconds": 12.2,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "Georgia removed party affiliation from midterm ballots to confuse voters"
@@ -214,23 +239,20 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 14.8,
+      "seconds": 13.2,
       "outlets": [
         "Snopes"
       ],
-      "rejected_quotes": 0,
+      "rejected_quotes": 1,
       "claim": "Dozens of immigrants sleep on the ground! Trump's America is a disgrace"
     },
     {
       "id": "ig015",
       "label": "false",
-      "verdict": "false",
-      "confidence": "medium",
-      "seconds": 13.1,
-      "outlets": [
-        "BBC Verify",
-        "Full Fact"
-      ],
+      "verdict": "unverified",
+      "confidence": "low",
+      "seconds": 6.1,
+      "outlets": [],
       "rejected_quotes": 0,
       "claim": "The UK will be overrun by Sharia law and Islamic culture by 2050"
     },
@@ -239,7 +261,7 @@
       "label": "misleading",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 13.7,
+      "seconds": 10.9,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "Biden now threatening to send American sons and daughters over there if Congress doesn't pass $61 billion for Ukraine"
@@ -247,10 +269,14 @@
     {
       "id": "ig017",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 7.9,
-      "outlets": [],
+      "verdict": "false",
+      "confidence": "medium",
+      "seconds": 15.0,
+      "outlets": [
+        "Reuters Fact Check",
+        "Full Fact",
+        "USA Today Fact Check"
+      ],
       "rejected_quotes": 0,
       "claim": "Putin threatened the US with overt military support for the Palestinians if America takes sides in the Israel-Gaza war"
     },
@@ -259,8 +285,10 @@
       "label": "true",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 10.3,
-      "outlets": [],
+      "seconds": 7.5,
+      "outlets": [
+        "USA Today Fact Check"
+      ],
       "rejected_quotes": 0,
       "claim": "Instagram will be blocked in Russia due to calls for violence against Russian soldiers"
     },
@@ -269,8 +297,9 @@
       "label": "false",
       "verdict": "false",
       "confidence": "high",
-      "seconds": 14.2,
+      "seconds": 15.8,
       "outlets": [
+        "Reuters Fact Check",
         "AP Fact Check",
         "AP Fact Check",
         "AFP Fact Check",
@@ -287,7 +316,7 @@
       "label": "misleading",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 8.7,
+      "seconds": 11.6,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "Meta is abandoning independent fact checkers on Facebook and Instagram, replacing them with user-generated community notes."
@@ -297,7 +326,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 11.5,
+      "seconds": 9.9,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "AI-generated images of Hong Kong buildings and vehicles wrapped in plastic were real preparations for Super Typhoon Ragasa"
@@ -307,7 +336,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 14.3,
+      "seconds": 11.1,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "AI-generated videos and images falsely depict destruction from deadly floods in Nairobi, Kenya"
@@ -317,7 +346,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 7.4,
+      "seconds": 11.2,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "CBC published an AI-generated image of two women crying over Khamenei's death"
@@ -327,7 +356,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 10.8,
+      "seconds": 10.3,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "A photo shows Nigerian churchgoers attending a service armed with rifles"
@@ -335,14 +364,13 @@
     {
       "id": "ig025",
       "label": "false",
-      "verdict": "misleading",
+      "verdict": "unverified",
       "confidence": "low",
-      "seconds": 21.0,
+      "seconds": 10.7,
       "outlets": [
+        "Snopes",
         "AFP Fact Check",
-        "AFP Fact Check",
-        "France 24 Truth or Fake",
-        "Snopes"
+        "AFP Fact Check"
       ],
       "rejected_quotes": 0,
       "claim": "The White House shared an AI-altered image showing a full flight watching Trump TV"
@@ -352,7 +380,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 10.7,
+      "seconds": 9.2,
       "outlets": [
         "USA Today Fact Check"
       ],
@@ -364,7 +392,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 251.7,
+      "seconds": 213.5,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "mRNA vaccines are being given to shrimp to alter human DNA upon consumption"
@@ -374,18 +402,25 @@
       "label": "misleading",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 9.8,
-      "outlets": [],
-      "rejected_quotes": 0,
+      "seconds": 10.1,
+      "outlets": [
+        "Africa Check"
+      ],
+      "rejected_quotes": 1,
       "claim": "A Nigerian 'Yahoo boy' scammed Donald Trump out of $250,000"
     },
     {
       "id": "ig029",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 9.2,
-      "outlets": [],
+      "verdict": "false",
+      "confidence": "medium",
+      "seconds": 13.6,
+      "outlets": [
+        "AFP Fact Check",
+        "PolitiFact",
+        "PolitiFact",
+        "Lead Stories"
+      ],
       "rejected_quotes": 0,
       "claim": "Alexa says Hurricane Helene was artificially created to flood and devastate places and crash land values"
     },
@@ -393,11 +428,14 @@
       "id": "ig030",
       "label": "false",
       "verdict": "false",
-      "confidence": "medium",
-      "seconds": 17.8,
+      "confidence": "high",
+      "seconds": 18.7,
       "outlets": [
+        "Reuters Fact Check",
+        "Reuters Fact Check",
         "AFP Fact Check",
         "BBC Verify",
+        "Full Fact",
         "FactCheck.org"
       ],
       "rejected_quotes": 0,
@@ -408,12 +446,13 @@
       "label": "false",
       "verdict": "false",
       "confidence": "high",
-      "seconds": 17.1,
+      "seconds": 16.5,
       "outlets": [
         "AFP Fact Check",
         "PolitiFact",
         "PolitiFact",
         "Lead Stories",
+        "USA Today Fact Check",
         "USA Today Fact Check"
       ],
       "rejected_quotes": 0,
@@ -424,11 +463,14 @@
       "label": "false",
       "verdict": "false",
       "confidence": "high",
-      "seconds": 18.2,
+      "seconds": 16.0,
       "outlets": [
+        "Reuters Fact Check",
+        "Reuters Fact Check",
         "AP Fact Check",
         "AFP Fact Check",
         "AFP Fact Check",
+        "BBC Verify",
         "Snopes",
         "PolitiFact",
         "PolitiFact",
@@ -442,10 +484,17 @@
     {
       "id": "ig033",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 11.2,
-      "outlets": [],
+      "verdict": "false",
+      "confidence": "high",
+      "seconds": 18.7,
+      "outlets": [
+        "AP Fact Check",
+        "BBC Verify",
+        "BBC Verify",
+        "PolitiFact",
+        "FactCheck.org",
+        "USA Today Fact Check"
+      ],
       "rejected_quotes": 0,
       "claim": "There are no humans on the International Space Station"
     },
@@ -454,29 +503,24 @@
       "label": "misleading",
       "verdict": "false",
       "confidence": "medium",
-      "seconds": 19.3,
+      "seconds": 19.6,
       "outlets": [
+        "Reuters Fact Check",
+        "Reuters Fact Check",
         "PolitiFact",
         "PolitiFact",
         "FactCheck.org"
       ],
-      "rejected_quotes": 0,
+      "rejected_quotes": 1,
       "claim": "Biden said 'there is no climate problem'"
     },
     {
       "id": "ig035",
       "label": "false",
-      "verdict": "false",
-      "confidence": "high",
-      "seconds": 17.5,
-      "outlets": [
-        "Snopes",
-        "Snopes",
-        "PolitiFact",
-        "PolitiFact",
-        "Lead Stories",
-        "USA Today Fact Check"
-      ],
+      "verdict": "unverified",
+      "confidence": "low",
+      "seconds": 7.5,
+      "outlets": [],
       "rejected_quotes": 0,
       "claim": "Trump said 'only criminals carry guns on our streets' after a protester was shot dead in Minneapolis"
     },
@@ -485,7 +529,7 @@
       "label": "false",
       "verdict": "false",
       "confidence": "medium",
-      "seconds": 16.7,
+      "seconds": 15.8,
       "outlets": [
         "Snopes",
         "Lead Stories",
@@ -499,7 +543,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 10.9,
+      "seconds": 9.9,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "Abraham Lincoln said 'In the end, it's not the years in your life that counts, it's the life in your years.'"
@@ -509,19 +553,22 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 23.6,
-      "outlets": [],
+      "seconds": 9.6,
+      "outlets": [
+        "Lead Stories"
+      ],
       "rejected_quotes": 0,
       "claim": "A video shows a blue whale nursing its calf underwater"
     },
     {
       "id": "ig039",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 8.7,
+      "verdict": "false",
+      "confidence": "medium",
+      "seconds": 16.8,
       "outlets": [
-        "PolitiFact"
+        "PolitiFact",
+        "USA Today Fact Check"
       ],
       "rejected_quotes": 0,
       "claim": "The new rabies shot is even more lethal"
@@ -531,7 +578,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 7.3,
+      "seconds": 11.8,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "A screenshot shows a false post shared on Instagram claiming that the United States had sent 700,000 adults missing in South Korea"
@@ -540,26 +587,29 @@
       "id": "ig041",
       "label": "false",
       "verdict": "false",
-      "confidence": "high",
-      "seconds": 10.2,
+      "confidence": "medium",
+      "seconds": 18.5,
       "outlets": [
         "BBC Verify",
+        "BBC Verify",
         "PolitiFact",
-        "Full Fact",
-        "USA Today Fact Check"
+        "Full Fact"
       ],
-      "rejected_quotes": 1,
+      "rejected_quotes": 2,
       "claim": "Tennessee bill that would ban the release of chemicals into the atmosphere is evidence chemtrails are real."
     },
     {
       "id": "ig042",
       "label": "false",
       "verdict": "false",
-      "confidence": "medium",
-      "seconds": 17.2,
+      "confidence": "high",
+      "seconds": 15.2,
       "outlets": [
         "Reuters Fact Check",
-        "Lead Stories"
+        "Reuters Fact Check",
+        "BBC Verify",
+        "Lead Stories",
+        "USA Today Fact Check"
       ],
       "rejected_quotes": 0,
       "claim": "Alexander Gleason’s 19th Century “New Standard Map of the World” proves the earth is flat and Antarctica is an ice ring around the earth"
@@ -569,7 +619,7 @@
       "label": "false",
       "verdict": "false",
       "confidence": "high",
-      "seconds": 10.9,
+      "seconds": 11.1,
       "outlets": [
         "Reuters Fact Check",
         "BBC Verify",
@@ -577,7 +627,7 @@
         "Full Fact",
         "USA Today Fact Check"
       ],
-      "rejected_quotes": 0,
+      "rejected_quotes": 1,
       "claim": "Elon Musk tweeted, “The world is flat.”"
     },
     {
@@ -585,7 +635,7 @@
       "label": "false",
       "verdict": "developing",
       "confidence": "low",
-      "seconds": 10.1,
+      "seconds": 8.8,
       "outlets": [
         "AFP Fact Check"
       ],
@@ -595,12 +645,13 @@
     {
       "id": "ig045",
       "label": "false",
-      "verdict": "unverified",
+      "verdict": "misleading",
       "confidence": "low",
-      "seconds": 14.8,
+      "seconds": 14.6,
       "outlets": [
         "Snopes",
-        "Snopes",
+        "France 24 Truth or Fake",
+        "France 24 Truth or Fake",
         "BBC Verify"
       ],
       "rejected_quotes": 0,
@@ -610,15 +661,16 @@
       "id": "ig046",
       "label": "misleading",
       "verdict": "false",
-      "confidence": "high",
-      "seconds": 15.2,
+      "confidence": "medium",
+      "seconds": 16.0,
       "outlets": [
         "AP Fact Check",
         "BBC Verify",
         "BBC Verify",
         "PolitiFact",
         "FactCheck.org",
-        "FactCheck.org"
+        "FactCheck.org",
+        "Reuters Fact Check"
       ],
       "rejected_quotes": 0,
       "claim": "Acetaminophen during pregnancy can be associated with a very increased risk of autism"
@@ -626,13 +678,14 @@
     {
       "id": "ig047",
       "label": "false",
-      "verdict": "unverified",
-      "confidence": "low",
-      "seconds": 7.4,
+      "verdict": "false",
+      "confidence": "medium",
+      "seconds": 13.5,
       "outlets": [
+        "Reuters Fact Check",
         "FactCheck.org"
       ],
-      "rejected_quotes": 1,
+      "rejected_quotes": 0,
       "claim": "Fruit consumption is the reason Americans are overweight"
     },
     {
@@ -640,7 +693,7 @@
       "label": "false",
       "verdict": "developing",
       "confidence": "low",
-      "seconds": 8.0,
+      "seconds": 13.9,
       "outlets": [],
       "rejected_quotes": 0,
       "claim": "A video shows students panicking in an auditorium during the June 8, 2026 Philippine earthquake"
@@ -648,10 +701,11 @@
     {
       "id": "ig049",
       "label": "false",
-      "verdict": "developing",
-      "confidence": "low",
+      "verdict": "false",
+      "confidence": "medium",
       "seconds": 10.8,
       "outlets": [
+        "BBC Verify",
         "France 24 Truth or Fake"
       ],
       "rejected_quotes": 0,
@@ -662,7 +716,7 @@
       "label": "false",
       "verdict": "unverified",
       "confidence": "low",
-      "seconds": 12.1,
+      "seconds": 11.5,
       "outlets": [
         "USA Today Fact Check",
         "USA Today Fact Check"
