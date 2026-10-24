@@ -93,7 +93,7 @@ async def record(captions: list[str], out: Path) -> None:
             text = fetcher.pages.get(r.url) or r.text
             if not text or r.url not in llm.stances:
                 continue
-            stance, quote = parse_stance(llm.stances[r.url])
+            stance, quote, _ = parse_stance(llm.stances[r.url])
             (out / "sources" / f"{name}_{i:02d}.json").write_text(json.dumps({
                 "url": r.url, "title": r.title, "claim_keys": [ev.claim.lower()],
                 "claimreview_rating": r.rating, "text": text,

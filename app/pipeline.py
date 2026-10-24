@@ -19,7 +19,9 @@ from app.models import Agreement, CommentOut, CommentsResponse, CommentsSummary,
 from app.outlets import all_outlets, outlet_by_id
 from app.quote_verifier import verify_label
 from app.search import SearchProvider, filter_and_rank
-from app.stance import explain, label_source
+from app.models import SourceRef, WhatIsTrue
+from app.quote_verifier import quote_in_text
+from app.stance import explain, label_source, summarise_known
 from app.text import Signals, detect_signals, normalise_post
 from app.verdict import Evidence, decide
 from app.vision import Vision, download_image
@@ -46,6 +48,7 @@ class EvidenceResult:
     explanation: str = ""
     agreement: Agreement = field(default_factory=Agreement)
     sources: list[SourceOut] = field(default_factory=list)
+    what_is_true: WhatIsTrue | None = None
 
 
 @dataclass
@@ -208,7 +211,9 @@ class Pipeline:
             summary.backed += verdict == "true"
             out.append(CommentOut(text=c.text, kind="claim", claim=c.claim, denies=c.denies,
                                   label=cm.LABELS[verdict], verdict=verdict, confidence=ev.confidence,
-                                  source=cm.best_source(ev.sources)))
+                                  source=cm.best_source(ev.sources),
+                                  what_is_true=ev.what_is_true.text if verdict == "false" and ev.what_is_true
+                                  and ev.what_is_true.kind == "correction" else None))
         return CommentsResponse(comments=out, summary=summary,
                                 tip=cm.comments_tip(summary.misinformation, summary.backed, summary.opinions))
 
@@ -240,10 +245,16 @@ class Pipeline:
         evidence: list[Evidence] = []
         rows: list[tuple[str, SourceOut]] = []
         rejected = 0
-        for r, (stance, quote) in zip(fetched, labels):
+        related: list[tuple[str, SourceRef]] = []  # verified on-topic sentences from non-deciding articles
+        for r, (stance, quote, rel) in zip(fetched, labels):
             outlet = outlet_by_id(r.outlet_id)
             stance, quote, was_rejected = verify_label(stance, quote, pages[r.url], outlet.domains[0])
             rejected += was_rejected
+            if rel and stance == "not_mentioned":
+                if quote_in_text(rel, pages[r.url]):
+                    related.append((rel.strip(), SourceRef(outlet=outlet.name, url=r.url)))
+                else:
+                    rejected += 1
             evidence.append(Evidence(r.outlet_id, stance, r.is_claimreview, r.rating))
             rows.append((r.outlet_id, SourceOut(title=r.title, url=r.url, outlet=outlet.name,
                                                 domain=outlet.domains[0], stance=stance, quote=quote,
@@ -265,7 +276,34 @@ class Pipeline:
         text = None
         if vr.verdict in ("true", "false", "misleading"):
             text = await explain(self.llm, claim, vr.verdict, quotes)
+        known = await self._what_is_true(claim, vr.verdict, shown, related)
         return EvidenceResult(claim=claim, checkable=True, breaking_news=breaking_news, verdict=vr.verdict,
                               confidence=vr.confidence,
                               explanation=text or coach.template_explanation(vr.verdict, agreement),
-                              agreement=agreement, sources=shown)
+                              agreement=agreement, sources=shown, what_is_true=known)
+
+    async def _what_is_true(self, claim: str, verdict: str, shown: list[SourceOut],
+                            related: list[tuple[str, SourceRef]]) -> WhatIsTrue | None:
+        """End every result with something concrete from the sources, never a bare 'unverified'."""
+        if verdict in ("false", "misleading"):
+            kind, picks = "correction", [(s.quote, SourceRef(outlet=s.outlet, url=s.url))
+                                         for s in shown if s.stance == "contradicts" and s.quote]
+        elif verdict in ("unverified", "developing"):
+            kind = "confirmed" if verdict == "developing" else "context"
+            picks = [(s.quote, SourceRef(outlet=s.outlet, url=s.url)) for s in shown if s.quote] + related
+        else:
+            return None
+        if not picks:
+            if verdict == "unverified":
+                return WhatIsTrue(kind="none", heading="What we know",
+                                  text="None of our outlets has reported on this yet. That's a reason to wait "
+                                       "before sharing, not proof that it's true or false.")
+            return None
+        picks = list({q: (q, ref) for q, ref in picks}.values())[:4]  # one entry per distinct quote
+        text = await summarise_known(self.llm, claim, kind, [q for q, _ in picks])
+        if not text:  # fall back to the best verified quote, word for word
+            text = f"“{picks[0][0]}” ({picks[0][1].outlet})"
+        heading = {"correction": "What's actually true", "context": "What the outlets do report",
+                   "confirmed": "What's confirmed so far"}[kind]
+        refs = list({ref.outlet: ref for _, ref in reversed(picks)}.values())[::-1][:3]  # one link per outlet
+        return WhatIsTrue(kind=kind, heading=heading, text=text, sources=refs)

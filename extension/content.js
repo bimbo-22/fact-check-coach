@@ -147,6 +147,11 @@
     v.append(el("b", `${emoji} ${label}`), el("span", ` · confidence ${r.confidence}`));
     panel.append(v);
     if (r.guess_feedback) panel.append(el("p", `🎯 ${r.guess_feedback}`, "fcc-feedback"));
+    if (r.what_is_true) {
+      const k = el("div", null, `fcc-known fcc-known-${r.what_is_true.kind}`);
+      k.append(el("b", r.what_is_true.heading), el("p", r.what_is_true.text));
+      panel.append(k);
+    }
     panel.append(el("p", r.explanation));
     for (const s of r.sources.slice(0, 3)) {
       const a = el("a", s.outlet);

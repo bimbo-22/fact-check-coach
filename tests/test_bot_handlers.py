@@ -62,3 +62,8 @@ def test_format_comments(client):
 def test_format_comments_empty_note():
     from bot.telegram_bot import format_comments
     assert format_comments({"comments": [], "note": "Paste <them>"}) == "Paste &lt;them&gt;"
+
+
+def test_format_reveal_shows_whats_actually_true(client):
+    out = format_reveal(reveal_payload(client, post("false_5g")["caption"]))
+    assert "✅ <b>What's actually true:</b>" in out and "<a href=" in out

@@ -51,7 +51,7 @@ def to_reveal(outcome: CheckOutcome, guess: str | None) -> RevealResponse:
     ev = outcome.evidence
     return RevealResponse(
         verdict=ev.verdict, confidence=ev.confidence, claim=ev.claim, explanation=ev.explanation,
-        agreement=ev.agreement, sources=ev.sources,
+        agreement=ev.agreement, sources=ev.sources, what_is_true=ev.what_is_true,
         guess_feedback=guess_feedback(guess, ev.verdict, ev.agreement) if guess else None,
         tip=outcome.tip,
     )

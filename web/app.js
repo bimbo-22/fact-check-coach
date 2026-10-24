@@ -174,6 +174,17 @@ function sourceLink(s) {
   return a;
 }
 
+function whatIsTrueCard(w) {
+  const card = el("div", null, `known known-${w.kind}`);
+  card.append(el("p", w.heading, "known-heading"), el("p", w.text, "known-text"));
+  if (w.sources.length) {
+    const refs = el("p", "Source: ", "known-refs");
+    w.sources.forEach((s, i) => { if (i) refs.append(", "); refs.append(sourceLink(s)); });
+    card.append(refs);
+  }
+  return card;
+}
+
 function renderReveal(p, guess) {
   const out = $("pane-result");
   out.replaceChildren();
@@ -187,6 +198,7 @@ function renderReveal(p, guess) {
 
   if (p.guess_feedback && guess) out.append(el("p", `🎯 ${p.guess_feedback}`, "feedback"));
   if (p.claim) out.append(el("p", `Claim: ${p.claim}`, "kicker"));
+  if (p.what_is_true) out.append(whatIsTrueCard(p.what_is_true));
   out.append(el("p", p.explanation, "explain"));
 
   if (p.verdict !== "opinion") {
@@ -289,6 +301,7 @@ function renderComments(p) {
       const li = el("li", null, `comment c-${c.verdict || c.kind}`);
       li.append(el("div", `${VERDICT_ICONS[c.verdict] || COMMENT_ICONS[c.kind] || "▫️"} “${c.text}”`));
       li.append(el("div", c.label, "comment-label"));
+      if (c.what_is_true) li.append(el("div", `What's actually true: ${c.what_is_true}`, "comment-true"));
       if (c.source && ["false", "true", "misleading"].includes(c.verdict)) {
         const a = sourceLink(c.source);
         a.textContent = `↳ ${c.source.outlet}`;

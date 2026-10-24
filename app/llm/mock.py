@@ -28,7 +28,7 @@ STOPWORDS = {
 }
 
 
-HEADERS = ("POST", "COMMENTS", "CLAIM", "SOURCE URL", "SOURCE TEXT", "VERDICT", "VERIFIED QUOTES")
+HEADERS = ("POST", "COMMENTS", "CLAIM", "TASK", "SOURCE URL", "SOURCE TEXT", "VERDICT", "VERIFIED QUOTES")
 FEELING_RE = re.compile(r"\b(scary|scared|lol|omg|wow|crazy|insane|honestly|cute|sad|angry)\b", re.I)
 
 
@@ -72,6 +72,9 @@ class MockLLM(LLMClient):
                 _section(user, "CLAIM"), _section(user, "SOURCE URL"), _section(user, "SOURCE TEXT")))
         if task == "explain":
             return self._explain(user)
+        if task == "known":
+            quotes = [q.strip("- ").strip() for q in _section(user, "VERIFIED QUOTES").splitlines() if q.strip()]
+            return f"The sources say: {quotes[0]}" if quotes else ""
         if task == "split_comments":
             return json.dumps({"comments": [self._sort_comment(l) for l in _section(user, "COMMENTS").splitlines()
                                             if l.strip()]})

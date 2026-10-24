@@ -141,6 +141,7 @@ function renderComments(p) {
       li.append(el("span", `${VERDICT_COMMENT_ICONS[c.verdict] || COMMENT_ICONS[c.kind] || "▫️"} `));
       li.append(el("span", `“${c.text}”`));
       li.append(el("div", c.label, "muted"));
+      if (c.what_is_true) li.append(el("div", `What's actually true: ${c.what_is_true}`, "comment-true"));
       if (c.source && ["false", "true", "misleading"].includes(c.verdict)) {
         const a = el("a", `↳ ${c.source.outlet}`);
         a.href = c.source.url;
@@ -196,6 +197,17 @@ function renderReveal(p, guess) {
 
   view.append(el("p", `You guessed: ${guess.replace("_", " ")}`, "muted"));
   if (p.guess_feedback) view.append(el("p", `🎯 ${p.guess_feedback}`, "feedback"));
+  if (p.what_is_true) {
+    const w = p.what_is_true;
+    const box = el("div", null, `known known-${w.kind}`);
+    box.append(el("strong", w.heading), el("p", w.text));
+    w.sources.forEach((s) => {
+      const a = el("a", s.outlet);
+      a.href = s.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+      box.append(a, document.createTextNode(" "));
+    });
+    view.append(box);
+  }
   view.append(el("p", p.explanation));
   if (p.verdict !== "opinion") {
     const a = p.agreement;

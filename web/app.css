@@ -250,3 +250,14 @@ blockquote { margin: 8px 0 0; padding-left: 12px; border-left: 3px solid var(--l
 .note-lead { font-size: 17px; margin: 0 0 10px; }
 .note-steps { margin: 0; padding-left: 22px; }
 .note-steps li { margin-bottom: 6px; }
+
+/* "What's actually true / what the outlets do report": the message that ends every result */
+.known { border-radius: 16px; padding: 16px 18px; margin: 0 0 16px; border: 1.5px solid var(--line); background: var(--bg-soft); }
+.known-correction { border-color: color-mix(in srgb, var(--true) 45%, transparent); background: color-mix(in srgb, var(--true) 8%, var(--bg)); }
+.known-context, .known-confirmed { border-color: color-mix(in srgb, var(--blue) 35%, transparent); background: color-mix(in srgb, var(--blue) 6%, var(--bg)); }
+.known-heading { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.known-correction .known-heading { color: var(--true); }
+.known-text { margin: 0; font-size: 17px; font-weight: 600; }
+.known-refs { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
+.known-refs a { color: var(--blue); font-weight: 600; text-decoration: none; }
+.comment-true { margin-top: 6px; font-size: 14px; color: var(--true); font-weight: 600; }

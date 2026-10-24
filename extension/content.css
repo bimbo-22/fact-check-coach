@@ -42,3 +42,6 @@
 .fcc-src q { display: block; margin-top: 2px; color: #5b6070; font-style: italic; }
 .fcc-tip { background: #e8f5ec; padding: 8px 10px; border-radius: 10px; }
 .fcc-err { color: #da1e28; }
+.fcc-known { border-radius: 12px; padding: 10px 12px; margin: 8px 0; background: #f2f4f8; }
+.fcc-known p { margin: 4px 0 0; font-weight: 600; }
+.fcc-known-correction { background: #e8f5ec; } .fcc-known-correction b { color: #198038; }

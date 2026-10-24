@@ -75,6 +75,11 @@ def format_reveal(payload: dict) -> str:
     lines = [f"{emoji} <b>{e(label)}</b>  ·  confidence: {e(payload['confidence'])}"]
     if payload.get("guess_feedback"):
         lines += ["", f"🎯 {e(payload['guess_feedback'])}"]
+    if payload.get("what_is_true"):
+        w = payload["what_is_true"]
+        icon = {"correction": "✅", "context": "📰", "confirmed": "📰"}.get(w["kind"], "ℹ️")
+        refs = ", ".join(f"<a href=\"{html.escape(s['url'])}\">{e(s['outlet'])}</a>" for s in w.get("sources", []))
+        lines += ["", f"{icon} <b>{e(w['heading'])}:</b> {e(w['text'])}" + (f" ({refs})" if refs else "")]
     lines += ["", e(payload["explanation"])]
     if payload["verdict"] != "opinion":
         lines += ["", f"📊 {e(agreement_text(payload['verdict'], payload['agreement']))}"]
@@ -114,6 +119,8 @@ def format_comments(payload: dict) -> str:
         icon = VERDICT_COMMENT_ICONS.get(c.get("verdict")) or COMMENT_ICONS.get(c["kind"], "▫️")
         text = c["text"] if len(c["text"]) <= 120 else c["text"][:117] + "…"
         lines.append(f"{icon} “{e(text)}”\n    <i>{e(c['label'])}</i>")
+        if c.get("what_is_true"):
+            lines.append(f"    ✅ What's actually true: {e(c['what_is_true'])}")
         if c.get("source") and c.get("verdict") in ("false", "true", "misleading"):
             s_ = c["source"]
             lines.append(f"    ↳ <a href=\"{html.escape(s_['url'])}\">{e(s_['outlet'])}</a>")

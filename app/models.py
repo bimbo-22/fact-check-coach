@@ -66,6 +66,19 @@ class SourceOut(BaseModel):
     rating: str | None = None
 
 
+class SourceRef(BaseModel):
+    outlet: str
+    url: str
+
+
+class WhatIsTrue(BaseModel):
+    """The message that ends every result: built only from verified quotes."""
+    kind: Literal["correction", "context", "confirmed", "none"]
+    heading: str
+    text: str
+    sources: list[SourceRef] = Field(default_factory=list)
+
+
 class RevealResponse(BaseModel):
     verdict: Verdict
     confidence: Confidence
@@ -73,6 +86,7 @@ class RevealResponse(BaseModel):
     explanation: str
     agreement: Agreement
     sources: list[SourceOut] = Field(default_factory=list)
+    what_is_true: WhatIsTrue | None = None
     guess_feedback: str | None = None
     tip: str
     disclaimer: str = DISCLAIMER
@@ -112,6 +126,7 @@ class CommentOut(BaseModel):
     verdict: Verdict | None = None
     confidence: Confidence | None = None
     source: SourceOut | None = None
+    what_is_true: str | None = None  # for misinformation: what the sources say instead
 
 
 class CommentsSummary(BaseModel):
