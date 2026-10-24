@@ -12,6 +12,7 @@ let mode = "post";
 let imageB64 = null;
 let checkId = null;
 let workTimer = null;
+let lastOpinion = null; // start payload of an opinion post: what we read, red flags, questions
 
 function el(tag, text, className) {
   const n = document.createElement(tag);
@@ -134,10 +135,14 @@ async function checkPost(text) {
     if (p.needs_text) return renderNote(p.note);
     checkId = p.check_id;
     if (!p.checkable) {
-      // Opinions skip the guess: show the result straight away.
+      // Opinions skip the guess: show the result straight away, with what we read and what to ask.
+      lastOpinion = p;
       return reveal("not_sure", true);
     }
+    lastOpinion = null;
     $("claim").textContent = p.claim;
+    $("read").hidden = !p.read_text;
+    if (p.read_text) $("read").textContent = `📝 We read: “${p.read_text}”`;
     $("question").textContent = `🤔 ${p.question}`;
     show("pane-guess");
   } catch (e) {
@@ -200,6 +205,16 @@ function renderReveal(p, guess) {
   if (p.claim) out.append(el("p", `Claim: ${p.claim}`, "kicker"));
   if (p.what_is_true) out.append(whatIsTrueCard(p.what_is_true));
   out.append(el("p", p.explanation, "explain"));
+  if (p.verdict === "opinion" && lastOpinion) {
+    if (lastOpinion.read_text) out.append(el("p", `📝 We read: “${lastOpinion.read_text}”`, "read-text"));
+    const box = el("div", null, "known known-context");
+    box.append(el("p", "Worth asking yourself", "known-heading"));
+    const ul = el("ul");
+    [...(lastOpinion.red_flags || []).map((f) => `🚩 ${f}`), ...(lastOpinion.opinion_questions || [])]
+      .forEach((q) => ul.append(el("li", q)));
+    box.append(ul);
+    out.append(box);
+  }
 
   if (p.verdict !== "opinion") {
     const a = p.agreement;

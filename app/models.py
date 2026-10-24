@@ -40,6 +40,9 @@ class StartResponse(BaseModel):
     guess_options: list[Guess] = ["true", "false", "not_sure"]
     note: str | None = None
     needs_text: bool = False
+    read_text: str | None = None          # what we read off a screenshot (echoed back, never stored)
+    red_flags: list[str] = Field(default_factory=list)
+    opinion_questions: list[str] = Field(default_factory=list)
 
 
 class RevealRequest(BaseModel):

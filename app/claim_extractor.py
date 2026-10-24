@@ -56,6 +56,29 @@ def parse_extraction(raw: str) -> Extraction | None:
         return None
 
 
+FIND_FACT_SYSTEM = """A post was judged to be mostly opinion. Look again for ANY specific factual claim inside it
+that could be checked against news reports (an event, a number, who did or said what, what an image shows),
+even if it is mixed with opinion or emotion.
+Reply with ONLY a JSON object, no prose:
+{"claim": string | null, "breaking_news": boolean}
+"claim": that factual claim restated neutrally in one sentence, adding nothing; null if there is truly none."""
+
+
+async def find_factual_claim(llm: LLMClient, post: str) -> Extraction | None:
+    """Second look at an 'opinion' post: many mix a checkable fact with opinion."""
+    try:
+        raw = await llm.complete("find_fact", FIND_FACT_SYSTEM, f"POST:\n{post}")
+        m = re.search(r"\{.*\}", raw, re.S)
+        data = json.loads(m.group(0)) if m else {}
+    except (LLMError, json.JSONDecodeError):
+        return None
+    claim = data.get("claim")
+    if not isinstance(claim, str) or len(claim.strip()) < 8:
+        return None
+    return Extraction(claim=claim.strip()[:300], checkable=True,
+                      breaking_news=bool(data.get("breaking_news", False)), language="und")
+
+
 async def extract_claim(llm: LLMClient, post: str) -> Extraction:
     """Try twice, then fall back to an 'unverified' placeholder."""
     for attempt in (1, 2):

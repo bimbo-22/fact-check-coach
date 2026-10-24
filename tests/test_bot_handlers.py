@@ -67,3 +67,15 @@ def test_format_comments_empty_note():
 def test_format_reveal_shows_whats_actually_true(client):
     out = format_reveal(reveal_payload(client, post("false_5g")["caption"]))
     assert "✅ <b>What's actually true:</b>" in out and "<a href=" in out
+
+
+def test_opinion_reply_coaches_instead_of_a_dead_end():
+    from bot.telegram_bot import format_opinion
+    out = format_opinion({"claim": "Pineapple on pizza is the worst", "read_text": "Pineapple on pizza is the worst!!!",
+                          "red_flags": ["Built to shock: ALL CAPS"], "opinion_questions": ["What facts is this built on?"]})
+    assert "📝 <b>I read:</b>" in out and "This is an opinion" in out and "🚩" in out and "Worth asking yourself" in out
+
+
+def test_start_message_shows_what_was_read():
+    out = format_start({"claim": "5G makes you sick", "question": "Who posted this?", "read_text": "BREAKING 5G makes you sick"})
+    assert out.startswith("📝 <b>I read:</b>")

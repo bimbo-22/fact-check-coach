@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 from app import coach
 from app.cache import TTLCache, text_hash
-from app.claim_extractor import extract_claim
+from app.claim_extractor import extract_claim, find_factual_claim
 from app.config import Settings
 from app.fetcher import MAX_SOURCE_CHARS, Fetcher
 
@@ -63,6 +63,8 @@ class CheckOutcome:
     needs_text: bool = False
     note: str | None = None
     cache_hit: bool = False
+    read_text: str | None = None
+    red_flags: list[str] = field(default_factory=list)
 
 
 class Pipeline:
@@ -133,11 +135,13 @@ class Pipeline:
                  hit, "yes" if image_text else "no")
         if hit:
             self.stats["cache_hits"] += 1
+        read = image_text[:400] if image_text else None
+        flags = coach.red_flags(signals)
         if not evidence.checkable:
             return CheckOutcome(evidence, signals, None, coach.pick_tip(signals, "opinion"),
-                                note=OPINION_NOTE, cache_hit=hit)
+                                note=OPINION_NOTE, cache_hit=hit, read_text=read, red_flags=flags)
         return CheckOutcome(evidence, signals, coach.pick_question(signals),
-                            coach.pick_tip(signals, evidence.verdict), cache_hit=hit)
+                            coach.pick_tip(signals, evidence.verdict), cache_hit=hit, read_text=read, red_flags=flags)
 
     @staticmethod
     def _shape(text: str, url: str | None, image: bytes | None) -> str:
@@ -165,6 +169,9 @@ class Pipeline:
                                   explanation=coach.template_explanation("unverified", Agreement(
                                       outlets_checked=len(all_outlets()), not_mentioned=len(all_outlets())))), False
 
+        if not ext.checkable and (fact := await find_factual_claim(self.llm, post)):
+            log.info("opinion post contains a checkable fact: checking that")
+            ext = fact
         if not ext.checkable:
             claim_key = text_hash(ext.claim)
             result = EvidenceResult(claim=ext.claim, checkable=False, verdict="opinion",

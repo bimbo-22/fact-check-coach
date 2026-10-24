@@ -270,3 +270,5 @@ blockquote { margin: 8px 0 0; padding-left: 12px; border-left: 3px solid var(--l
 .flag-pill { padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: #da1e28; color: #fff; }
 .flag-pill.ok { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
 @media (max-width: 900px) { .where-grid { grid-template-columns: 1fr; } }
+.read-text { font-size: 14px; color: var(--muted); background: var(--bg-soft); border-radius: 12px; padding: 10px 12px; margin: 0 0 14px; }
+.known ul { margin: 6px 0 0; padding-left: 20px; }

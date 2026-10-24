@@ -171,3 +171,17 @@ async def test_shared_link_from_our_own_fixture_post_is_read(pipeline):
 async def test_link_from_another_app_asks_for_screenshot(pipeline):
     out = await pipeline.run("https://vm.tiktok.com/ZMabc123/")
     assert out.needs_text and "can't open links" in out.note
+
+
+async def test_opinion_with_a_fact_inside_gets_the_fact_checked(pipeline):
+    # First pass says opinion; the second look finds the checkable fact and checks it.
+    out = await pipeline.run("Honestly I hate this. Scientists confirm 5G towers make people sick.")
+    assert out.evidence.checkable and out.evidence.verdict in ("false", "unverified")
+    assert pipeline.llm.calls["find_fact"] == 1
+
+
+def test_api_start_returns_read_text_and_red_flags(client):
+    import base64
+    b64 = base64.b64encode((FIXTURES / "images" / "headline_5g.png").read_bytes()).decode()
+    body = client.post("/check/start", json={"image_base64": b64}).json()
+    assert "5G towers make people sick" in body["read_text"] and body["red_flags"]

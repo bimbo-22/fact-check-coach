@@ -72,6 +72,11 @@ class MockLLM(LLMClient):
                 _section(user, "CLAIM"), _section(user, "SOURCE URL"), _section(user, "SOURCE TEXT")))
         if task == "explain":
             return self._explain(user)
+        if task == "find_fact":
+            post = _section(user, "POST")
+            facts = [s for s in re.split(r"(?<=[.!?])\s+", post) if re.search(r"\d|\b(is|are|was|were|shows?|confirm\w*)\b", s)
+                     and not OPINION_RE.search(s)]
+            return json.dumps({"claim": facts[0] if facts else None, "breaking_news": False})
         if task == "known":
             quotes = [q.strip("- ").strip() for q in _section(user, "VERIFIED QUOTES").splitlines() if q.strip()]
             return f"The sources say: {quotes[0]}" if quotes else ""

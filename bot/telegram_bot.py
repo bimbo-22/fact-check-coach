@@ -65,10 +65,40 @@ def agreement_text(verdict: str, a: dict) -> str:
     return f"{head}: {say(a['contradicts'])} it's false, {say(a['supports'])} it's true."
 
 
+def read_line(payload: dict) -> str:
+    read = payload.get("read_text")
+    if not read:
+        return ""
+    read = " ".join(read.split())
+    return f"📝 <b>I read:</b> “{e(read if len(read) <= 220 else read[:217] + '…')}”\n\n"
+
+
+def flags_block(payload: dict) -> str:
+    flags = payload.get("red_flags") or []
+    if not flags:
+        return ""
+    return "🚩 <b>Warning signs in how it's written:</b>\n" + "\n".join(f"• {e(f)}" for f in flags) + "\n\n"
+
+
 def format_start(payload: dict) -> str:
-    return (f"🔎 <b>The claim:</b> {e(payload['claim'])}\n\n"
+    return (read_line(payload)
+            + f"🔎 <b>The claim:</b> {e(payload['claim'])}\n\n"
             f"🤔 {e(payload['question'])}\n\n"
             "<b>What's your guess?</b>")
+
+
+def format_opinion(payload: dict) -> str:
+    """Opinions aren't fact-checked, but the user still learns something from every upload."""
+    lines = [read_line(payload).rstrip()] if payload.get("read_text") else []
+    claim = payload.get("claim")
+    lines.append(f"💬 <b>This is an opinion</b>{f': “{e(claim)}”' if claim else ''}")
+    lines.append("I couldn't find a specific fact in it to check against the news, so there's no true or false here.")
+    if payload.get("red_flags"):
+        lines += ["", flags_block(payload).rstrip()]
+    if payload.get("opinion_questions"):
+        lines += ["", "🤔 <b>Worth asking yourself:</b>"] + [f"• {e(q)}" for q in payload["opinion_questions"]]
+    lines += ["", "If the post does claim a fact, type it and I'll check it."]
+    return "\n".join(lines)
 
 
 def format_reveal(payload: dict) -> str:
@@ -257,7 +287,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         await msg.reply_text(payload["note"])
         return
     if not payload["checkable"]:
-        await msg.reply_text(f"💬 {payload['note']}")
+        await msg.reply_text(format_opinion(payload), parse_mode=ParseMode.HTML)
         return
     await msg.reply_text(format_start(payload), parse_mode=ParseMode.HTML,
                          reply_markup=guess_keyboard(payload["check_id"]))

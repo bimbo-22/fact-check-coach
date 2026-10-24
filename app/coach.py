@@ -5,6 +5,29 @@ from app.text import Signals
 DEFAULT_QUESTION = "Before I show you: who posted this, and do they link a source?"
 
 
+def red_flags(s: Signals) -> list[str]:
+    """Warning signs in how the post is written (the extension shows the same ones on Instagram)."""
+    flags = []
+    if not s.has_source_link:
+        flags.append("No source named: it doesn't say where the information comes from.")
+    if s.emotional:
+        flags.append("Built to shock: ALL CAPS, “!!!” or emotional words push you to react before you think.")
+    if s.link_in_bio:
+        flags.append("“Link in bio”: the evidence is hidden somewhere else.")
+    if s.many_hashtags:
+        flags.append("Hashtag pile-on: hashtags spread a post; they don't prove it.")
+    if s.old_date:
+        flags.append(f"Old date inside ({s.old_year}): old stories get reshared as if they're new.")
+    return flags
+
+
+OPINION_QUESTIONS = [
+    "What facts is this opinion built on, and can you check those?",
+    "Who benefits if you share this?",
+    "Would you feel the same if someone you disagree with posted it?",
+]
+
+
 def pick_question(s: Signals) -> str:
     if s.is_reel:
         return "Who's speaking in this Reel, and do they say where their info comes from?"

@@ -7,7 +7,11 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.coach import guess_feedback
+from app.coach import OPINION_QUESTIONS, guess_feedback
+
+
+def coach_questions() -> list[str]:
+    return list(OPINION_QUESTIONS)
 from app.config import Settings, get_settings
 from app.fetcher import FixtureFetcher, HttpFetcher
 from app.instagram import make_fixture_fetch
@@ -94,7 +98,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         log.info("start check_id=%s client=%s cache_hit=%s", check_id, req.client, outcome.cache_hit)
         ev = outcome.evidence
         return StartResponse(check_id=check_id, claim=ev.claim, checkable=ev.checkable,
-                             question=outcome.question, note=outcome.note)
+                             question=outcome.question, note=outcome.note, read_text=outcome.read_text,
+                             red_flags=outcome.red_flags,
+                             opinion_questions=[] if ev.checkable else coach_questions())
 
     @app.post("/check/reveal", response_model=RevealResponse)
     async def check_reveal(req: RevealRequest) -> RevealResponse:
