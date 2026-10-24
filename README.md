@@ -90,6 +90,19 @@ Much Instagram misinformation is a screenshot of a headline with no useful capti
 
 A vision model **only transcribes** the visible text, with usernames and like counts removed. That text then goes through the same pipeline. The default is Llama 4 Maverick via ICA, which has open weights; `qwen2.5vl` via Ollama works offline. For an Instagram link, the post's own preview image is read too. Images are never stored or logged.
 
+### Red flags in the Instagram feed (Chrome extension)
+
+On instagram.com, every post gets a **red-flag score** worked out in the browser: no source named, built to shock (ALL CAPS, "!!!"), pressure to share, "link in bio", too-good-to-be-true wording, a hashtag pile-on, old dates. It's a lesson in *how* the post is written, not a verdict, and **nothing leaves the browser** until the user clicks *Fact-check this post*, which runs the usual guess-first check inside the feed. It can be switched off in the popup.
+
+### Every result ends with what's known
+
+"Unverified" on its own is a dead end, so every result ends with a message built only from verified quotes:
+- **What's actually true** (false or misleading): what the contradicting outlets say.
+- **What the outlets do report** (unverified): on-topic sentences from articles that don't confirm or deny the exact claim, each quote-checked like the rest. For example, for the "looting" video: Full Fact reports that the viral image was edited.
+- **What's confirmed so far** (still developing).
+
+The model may only rephrase those quotes; links, markdown and new numbers are rejected, with the exact quote as the fallback.
+
 ### Comment sections
 
 The debunk is often buried in the comments, next to the misinformation. Paste the comments or send a screenshot (bot: `/comments`, or the *Check the comments too* button; extension: *Check comments* tab). Each comment is labelled:

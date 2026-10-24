@@ -261,3 +261,12 @@ blockquote { margin: 8px 0 0; padding-left: 12px; border-left: 3px solid var(--l
 .known-refs { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
 .known-refs a { color: var(--blue); font-weight: 600; text-decoration: none; }
 .comment-true { margin-top: 6px; font-size: 14px; color: var(--true); font-weight: 600; }
+
+.where-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; }
+.where-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; background: var(--bg-soft); display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.where-card p { color: var(--muted); margin: 0 0 6px; }
+.where-icon { font-size: 26px; }
+.where-demo { display: flex; flex-wrap: wrap; gap: 8px; }
+.flag-pill { padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: #da1e28; color: #fff; }
+.flag-pill.ok { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+@media (max-width: 900px) { .where-grid { grid-template-columns: 1fr; } }
