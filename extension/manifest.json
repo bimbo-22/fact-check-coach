@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Fact-Check Coach",
+  "version": "0.1.0",
+  "description": "Guess first, then see what 6 named news outlets say. A fact-checker that trains you to need it less.",
+  "permissions": ["contextMenus", "activeTab", "storage"],
+  "host_permissions": ["http://localhost:8000/*", "http://127.0.0.1:8000/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "Fact-Check Coach" }
+}

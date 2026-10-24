@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fact-Check Coach</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Fact-Check Coach</h1>
+    <p class="tagline">Guess first. Then check the evidence.</p>
+  </header>
+
+  <section id="input-view">
+    <button id="check-ig" class="secondary" hidden>Check this Instagram post</button>
+    <label for="post-text">Paste a caption or post text</label>
+    <textarea id="post-text" rows="5" maxlength="2000" placeholder="e.g. Scientists CONFIRM 5G towers make people sick!!! link in bio"></textarea>
+    <button id="check-btn">Check it</button>
+  </section>
+
+  <section id="start-view" hidden>
+    <p class="label">The claim</p>
+    <p id="claim" class="claim"></p>
+    <p id="question" class="question"></p>
+    <p class="label">What's your guess?</p>
+    <div class="guesses">
+      <button data-guess="true">True</button>
+      <button data-guess="false">False</button>
+      <button data-guess="not_sure">Not sure</button>
+    </div>
+  </section>
+
+  <section id="reveal-view" hidden></section>
+
+  <p id="status" class="status" role="status"></p>
+
+  <details id="settings">
+    <summary>Settings</summary>
+    <label for="api-base">API address</label>
+    <input id="api-base" type="url" />
+    <button id="save-api" class="secondary">Save</button>
+  </details>
+
+  <script src="popup.js"></script>
+</body>
+</html>
