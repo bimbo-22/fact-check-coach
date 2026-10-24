@@ -19,13 +19,16 @@ MAX_CLAIMS_CHECKED = 5  # resource use: each claim is a full evidence check
 
 SYSTEM = """You sort social media comments for a fact-checking tool.
 Reply with ONLY a JSON object, no prose, no code fences:
-{"comments": [{"text": string, "kind": "opinion" | "claim" | "question" | "other", "claim": string | null}]}
+{"comments": [{"text": string, "kind": "opinion" | "claim" | "question" | "other",
+               "claim": string | null, "position": "asserts" | "denies" | null}]}
 
 Rules:
 - One entry per comment, in the order given. Leave out usernames, handles, like counts and timestamps.
 - "text": the comment as written, without the username.
-- "claim": a comment that states something factual that could be checked. Put that claim, restated
-  neutrally in one sentence, in "claim". Add nothing that isn't in the comment.
+- "claim": a comment that states something factual that could be checked. Put the underlying claim in
+  "claim", stated POSITIVELY in one neutral sentence (no "not", no "no evidence"), and say in "position"
+  whether the comment asserts it or denies it. Add nothing that isn't in the comment.
+  Example: "Fake, there's no proof vaccines cause autism" → claim "Vaccines cause autism", position "denies".
 - "opinion": feelings, judgements, jokes, insults. "question": asks something. "other": anything else.
 - Do not say whether anything is true."""
 
@@ -48,6 +51,15 @@ class SortedComment:
     text: str
     kind: str
     claim: str | None
+    denies: bool = False  # the comment rejects `claim` (claims are always stated positively)
+
+
+INVERT = {"true": "false", "false": "true"}
+
+
+def comment_verdict(claim_verdict: str, denies: bool) -> str:
+    """Verdict on the comment itself: denying a false claim is right, denying a true one is wrong."""
+    return INVERT.get(claim_verdict, claim_verdict) if denies else claim_verdict
 
 
 def parse_sorted(raw: str) -> list[SortedComment] | None:
@@ -65,7 +77,8 @@ def parse_sorted(raw: str) -> list[SortedComment] | None:
         kind = it.get("kind") if it.get("kind") in ("opinion", "claim", "question", "other") else "other"
         claim = str(it["claim"]).strip() if kind == "claim" and it.get("claim") else None
         out.append(SortedComment(str(it["text"]).strip()[:500], "claim" if claim else
-                                 ("other" if kind == "claim" else kind), claim))
+                                 ("other" if kind == "claim" else kind), claim,
+                                 denies=bool(claim) and it.get("position") == "denies"))
     return out
 
 

@@ -181,10 +181,12 @@ class Pipeline:
                                       label="Not checked: too many claims in one go"))
                 continue
             ev = checked[c.claim][0]
-            summary.misinformation += ev.verdict == "false"
-            summary.backed += ev.verdict == "true"
-            out.append(CommentOut(text=c.text, kind="claim", claim=c.claim, label=cm.LABELS[ev.verdict],
-                                  verdict=ev.verdict, confidence=ev.confidence, source=cm.best_source(ev.sources)))
+            verdict = cm.comment_verdict(ev.verdict, c.denies)
+            summary.misinformation += verdict == "false"
+            summary.backed += verdict == "true"
+            out.append(CommentOut(text=c.text, kind="claim", claim=c.claim, denies=c.denies,
+                                  label=cm.LABELS[verdict], verdict=verdict, confidence=ev.confidence,
+                                  source=cm.best_source(ev.sources)))
         return CommentsResponse(comments=out, summary=summary,
                                 tip=cm.comments_tip(summary.misinformation, summary.backed, summary.opinions))
 

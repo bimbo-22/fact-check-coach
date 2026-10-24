@@ -60,3 +60,18 @@ async def test_unparseable_sort_gives_friendly_note(pipeline):
 def test_parse_sorted_downgrades_claim_without_claim_text():
     items = parse_sorted('{"comments": [{"text": "x", "kind": "claim", "claim": null}, {"text": "y", "kind": "weird"}]}')
     assert [(i.kind, i.claim) for i in items] == [("other", None), ("other", None)]
+
+
+def test_comment_verdict_inversion():
+    from app.comments import comment_verdict
+    assert comment_verdict("false", denies=True) == "true"     # rejecting a false claim = right
+    assert comment_verdict("true", denies=True) == "false"     # rejecting a true claim = misinformation
+    assert comment_verdict("unverified", denies=True) == "unverified"
+    assert comment_verdict("false", denies=False) == "false"
+
+
+def test_debunk_comment_is_checked_as_positive_claim_and_reuses_cache(client):
+    client.post("/check", json={"text": "5G makes people sick"})
+    resp = client.post("/comments/check", json={"text": COMMENTS}).json()
+    debunk = by_text(resp, "Fake. Reuters")
+    assert debunk["denies"] is True and "no evidence" not in debunk["claim"].lower()

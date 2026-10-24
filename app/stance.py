@@ -14,6 +14,11 @@ If the text does not address the claim, answer not_mentioned.
 Reply with ONLY a JSON object, no prose, no code fences:
 {"stance": "supports" | "contradicts" | "not_mentioned", "quote": string | null}
 
+- "supports": the source says the claim, exactly as worded, is true.
+- "contradicts": the source says the claim, exactly as worded, is false or unsupported.
+Read negations carefully. Example: claim "There is no evidence that X causes Y" and source
+"No study has linked X to Y" → supports, because the source agrees with the claim as worded.
+
 "quote" must be copied character for character from the source text: the one sentence that
 justifies your label. Use null when the stance is not_mentioned."""
 

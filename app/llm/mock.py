@@ -95,17 +95,14 @@ class MockLLM(LLMClient):
             return {"text": line, "kind": "question", "claim": None}
         if OPINION_RE.search(line) or FEELING_RE.search(line):
             return {"text": line, "kind": "opinion", "claim": None}
-        return {"text": line, "kind": "claim", "claim": line}
+        if NEGATION_RE.search(line) or re.match(r"(?i)fake\b", line):
+            positive = re.sub(r"(?i)^.*?\b(there is no evidence( that)?|no evidence( that)?|it'?s not true that)\s*", "", line)
+            return {"text": line, "kind": "claim", "claim": positive, "position": "denies"}
+        return {"text": line, "kind": "claim", "claim": line, "position": "asserts"}
 
     def _stance(self, claim: str, url: str, text: str) -> dict:
         if url in self.stances:
-            scripted = self.stances[url]
-            # Scripted stances are written against the positive claim; a negated claim ("there is no
-            # evidence that…") flips them, so a debunking comment is correctly backed.
-            if NEGATION_RE.search(claim) and scripted["stance"] in ("supports", "contradicts"):
-                flipped = "supports" if scripted["stance"] == "contradicts" else "contradicts"
-                return {**scripted, "stance": flipped}
-            return scripted
+            return self.stances[url]
         keys = set(_keywords(claim))
         if not keys:
             return {"stance": "not_mentioned", "quote": None}

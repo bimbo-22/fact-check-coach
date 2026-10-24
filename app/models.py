@@ -102,7 +102,8 @@ class CommentOut(BaseModel):
     text: str
     kind: CommentKind
     label: str
-    claim: str | None = None
+    claim: str | None = None  # the underlying claim, stated positively
+    denies: bool = False      # the comment rejects that claim; `verdict` is about the comment itself
     verdict: Verdict | None = None
     confidence: Confidence | None = None
     source: SourceOut | None = None
