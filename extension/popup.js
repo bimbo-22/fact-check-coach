@@ -14,6 +14,9 @@ const $ = (id) => document.getElementById(id);
 let apiBase = DEFAULT_API;
 let checkId = null;
 let pendingUrl = null; // Instagram link waiting for a pasted caption
+let mode = "post"; // "post" | "comments"
+const COMMENT_ICONS = { opinion: "💬", question: "❔", other: "▫️" };
+const VERDICT_COMMENT_ICONS = { false: "🚩", true: "✅", misleading: "⚠️", unverified: "❓", developing: "⏳" };
 
 function el(tag, text, className) {
   const node = document.createElement(tag);
@@ -23,7 +26,7 @@ function el(tag, text, className) {
 }
 
 function show(view) {
-  for (const id of ["input-view", "start-view", "reveal-view"]) $(id).hidden = id !== view;
+  for (const id of ["input-view", "start-view", "reveal-view", "comments-view"]) $(id).hidden = id !== view;
 }
 
 function status(msg) {
@@ -44,10 +47,34 @@ async function api(path, body) {
   return r.json();
 }
 
-async function startCheck(text, url) {
-  status("Checking six outlets…");
+function setMode(next) {
+  mode = next;
+  $("tab-post").classList.toggle("active", mode === "post");
+  $("tab-comments").classList.toggle("active", mode === "comments");
+  $("tab-post").setAttribute("aria-selected", String(mode === "post"));
+  $("tab-comments").setAttribute("aria-selected", String(mode === "comments"));
+  $("text-label").textContent = mode === "post" ? "Paste a caption or post text" : "Paste the comments (one per line)";
+  $("post-text").placeholder = mode === "post"
+    ? "e.g. Scientists CONFIRM 5G towers make people sick!!! link in bio"
+    : "e.g.\nThis is so scary\nFake, Reuters says there's no evidence\nIs this real??";
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    if (file.size > 5 * 1024 * 1024) return reject(new Error("That image is too big (max 5 MB)."));
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1]);
+    reader.onerror = () => reject(new Error("Couldn't read that image."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function startCheck(text, url, imageB64 = null, imageUrl = null) {
+  status(imageB64 || imageUrl ? "Reading the screenshot, then checking six outlets…" : "Checking six outlets…");
   try {
-    const p = await api("/check/start", { text: text || "", url: url || null, client: "extension" });
+    const p = await api("/check/start", {
+      text: text || "", url: url || null, image_base64: imageB64, image_url: imageUrl, client: "extension",
+    });
     status("");
     if (p.needs_text) {
       pendingUrl = url;
@@ -67,8 +94,54 @@ async function startCheck(text, url) {
     $("question").textContent = `🤔 ${p.question}`;
     show("start-view");
   } catch (e) {
-    status(e.status === 422 ? "Paste some text to check." : `Can't reach the checker at ${apiBase}. Is the API running?`);
+    status(e.status === 422 ? "Couldn't use that. Paste some text or try a PNG/JPEG screenshot." : `Can't reach the checker at ${apiBase}. Is the API running?`);
   }
+}
+
+async function checkComments(text, imageB64) {
+  status(imageB64 ? "Reading the screenshot and sorting the comments…" : "Sorting the comments…");
+  try {
+    const p = await api("/comments/check", { text: text || "", image_base64: imageB64, client: "extension" });
+    status("");
+    renderComments(p);
+  } catch (e) {
+    status(e.status === 422 ? "Paste some comments or add a screenshot." : `Can't reach the checker at ${apiBase}.`);
+  }
+}
+
+function renderComments(p) {
+  const view = $("comments-view");
+  view.replaceChildren();
+  if (!p.comments.length) {
+    view.append(el("p", p.note || "I couldn't find any comments in that."));
+  } else {
+    const s = p.summary;
+    view.append(el("p", `${s.opinions} opinion(s) · ${s.claims} factual claim(s) · ${s.questions} question(s)`, "label"));
+    if (s.misinformation) view.append(el("p", `🚩 ${s.misinformation} spread misinformation`, "flag-bad"));
+    if (s.backed) view.append(el("p", `✅ ${s.backed} backed by the sources`, "flag-good"));
+    const list = el("ul", null, "comments");
+    for (const c of p.comments) {
+      const li = el("li", null, `comment kind-${c.kind} verdict-${c.verdict || "none"}`);
+      li.append(el("span", `${VERDICT_COMMENT_ICONS[c.verdict] || COMMENT_ICONS[c.kind] || "▫️"} `));
+      li.append(el("span", `“${c.text}”`));
+      li.append(el("div", c.label, "muted"));
+      if (c.source && ["false", "true", "misleading"].includes(c.verdict)) {
+        const a = el("a", `↳ ${c.source.outlet}`);
+        a.href = c.source.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        li.append(a);
+      }
+      list.append(li);
+    }
+    view.append(list);
+    view.append(el("p", `💡 Tip: ${p.tip}`, "tip"));
+    view.append(el("p", p.disclaimer, "disclaimer"));
+  }
+  const again = el("button", "Check something else", "secondary");
+  again.addEventListener("click", () => show("input-view"));
+  view.append(again);
+  show("comments-view");
 }
 
 function agreementText(verdict, a) {
@@ -189,10 +262,18 @@ async function init() {
     try { await chrome.storage.local.set({ apiBase }); } catch (_) {}
     status("Saved.");
   });
-  $("check-btn").addEventListener("click", () => {
+  $("tab-post").addEventListener("click", () => setMode("post"));
+  $("tab-comments").addEventListener("click", () => setMode("comments"));
+  $("check-btn").addEventListener("click", async () => {
     const text = $("post-text").value.trim();
-    if (!text && !pendingUrl) return status("Paste some text to check.");
-    startCheck(text, pendingUrl);
+    const file = $("image-input").files[0];
+    let imageB64 = null;
+    if (file) {
+      try { imageB64 = await fileToBase64(file); } catch (e) { return status(e.message); }
+    }
+    if (!text && !imageB64 && !pendingUrl) return status("Paste some text or add a screenshot.");
+    if (mode === "comments") checkComments(text, imageB64);
+    else startCheck(text, pendingUrl, imageB64);
   });
   for (const b of document.querySelectorAll("[data-guess]")) {
     b.addEventListener("click", () => reveal(b.dataset.guess));
@@ -208,10 +289,14 @@ async function init() {
     }
   } catch (_) { /* opened as a context-menu window: no active-tab access needed */ }
 
-  const text = new URLSearchParams(location.search).get("text");
+  const params = new URLSearchParams(location.search);
+  const text = params.get("text");
+  const imageUrl = params.get("imageUrl");
   if (text) {
     $("post-text").value = text;
     startCheck(text, null);
+  } else if (imageUrl) {
+    startCheck("", null, null, imageUrl);
   }
 }
 

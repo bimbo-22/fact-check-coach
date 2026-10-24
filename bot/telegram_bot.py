@@ -3,6 +3,7 @@
 Privacy: never logs message text, usernames or chat IDs. A pending Instagram link is kept only in
 memory (chat_data, no persistence) for at most 10 minutes.
 """
+import base64
 import html
 import logging
 import time
@@ -25,11 +26,15 @@ MAX_SOURCES = 3
 
 WELCOME = (
     "👋 <b>Fact-Check Coach</b>\n\n"
-    "Send me a post you're not sure about: paste the caption, or share an Instagram post straight to me.\n\n"
+    "Send me a post you're not sure about: paste the caption, share an Instagram post straight to me, "
+    "or send a <b>screenshot</b>.\n\n"
     "Before I show you anything, I'll ask <b>you</b> to guess. Then you'll see what 6 named news outlets "
     "say, with quotes checked word for word. The goal: you need me less every time.\n\n"
-    "🔒 I don't store your messages, your username or this chat."
+    "🗨 Want to know which comments to trust? Send /comments, then paste or screenshot them.\n\n"
+    "🔒 I don't store your messages, your screenshots, your username or this chat."
 )
+COMMENT_ICONS = {"opinion": "💬", "question": "❔", "other": "▫️"}
+VERDICT_COMMENT_ICONS = {"false": "🚩", "true": "✅", "misleading": "⚠️", "unverified": "❓", "developing": "⏳"}
 VERDICTS = {
     "false": ("❌", "False"),
     "true": ("✅", "True"),
@@ -94,6 +99,32 @@ def format_reveal(payload: dict) -> str:
     return "\n".join(lines)
 
 
+def format_comments(payload: dict) -> str:
+    if not payload.get("comments"):
+        return e(payload.get("note") or "I couldn't find any comments in that.")
+    sm = payload["summary"]
+    lines = [f"🗨 <b>Comment check</b>: {sm['opinions']} opinion{'s' * (sm['opinions'] != 1)}, "
+             f"{sm['claims']} factual claim{'s' * (sm['claims'] != 1)}, {sm['questions']} question{'s' * (sm['questions'] != 1)}"]
+    if sm["misinformation"]:
+        lines.append(f"🚩 <b>{sm['misinformation']} spread{'s' * (sm['misinformation'] == 1)} misinformation</b>")
+    if sm["backed"]:
+        lines.append(f"✅ <b>{sm['backed']} {'is' if sm['backed'] == 1 else 'are'} backed by the sources</b>")
+    lines.append("")
+    for c in payload["comments"]:
+        icon = VERDICT_COMMENT_ICONS.get(c.get("verdict")) or COMMENT_ICONS.get(c["kind"], "▫️")
+        text = c["text"] if len(c["text"]) <= 120 else c["text"][:117] + "…"
+        lines.append(f"{icon} “{e(text)}”\n    <i>{e(c['label'])}</i>")
+        if c.get("source") and c.get("verdict") in ("false", "true", "misleading"):
+            s_ = c["source"]
+            lines.append(f"    ↳ <a href=\"{html.escape(s_['url'])}\">{e(s_['outlet'])}</a>")
+    lines += ["", f"💡 <b>Tip:</b> {e(payload['tip'])}", "", f"<i>{e(payload['disclaimer'])}</i>"]
+    return "\n".join(lines)
+
+
+def comments_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([[InlineKeyboardButton("🗨 Check the comments too", callback_data="comments")]])
+
+
 def guess_keyboard(check_id: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([[InlineKeyboardButton(label, callback_data=f"g|{check_id}|{g}")
                                   for g, label in GUESS_LABELS.items()]])
@@ -103,8 +134,15 @@ class ApiClient:
     def __init__(self, base_url: str) -> None:
         self.http = httpx.AsyncClient(base_url=base_url, timeout=30)
 
-    async def start(self, text: str, url: str | None) -> dict:
-        r = await self.http.post("/check/start", json={"text": text, "url": url, "client": "telegram"})
+    async def start(self, text: str, url: str | None, image_b64: str | None = None) -> dict:
+        r = await self.http.post("/check/start", json={"text": text, "url": url, "image_base64": image_b64,
+                                                       "client": "telegram"})
+        r.raise_for_status()
+        return r.json()
+
+    async def comments(self, text: str, image_b64: str | None = None) -> dict:
+        r = await self.http.post("/comments/check", json={"text": text, "image_base64": image_b64,
+                                                          "client": "telegram"})
         r.raise_for_status()
         return r.json()
 
@@ -116,10 +154,50 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.effective_message.reply_text(WELCOME, parse_mode=ParseMode.HTML)
 
 
+async def cmd_comments(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    context.chat_data["comments_mode"] = time.time()
+    await update.effective_message.reply_text(
+        "🗨 Paste the comments (one per line is best) or send a screenshot of them. "
+        "I'll label opinions, flag misinformation and point out the comments the sources back up.")
+
+
+async def on_comments_button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.callback_query.answer()
+    await cmd_comments(update, context)
+
+
+async def photo_b64(msg) -> str | None:
+    """Largest size of a sent photo (or image document), base64. Kept in memory only for this request."""
+    if msg.photo:
+        f = await msg.photo[-1].get_file()
+    elif msg.document and (msg.document.mime_type or "").startswith("image/"):
+        f = await msg.document.get_file()
+    else:
+        return None
+    return base64.b64encode(bytes(await f.download_as_bytearray())).decode()
+
+
+async def check_comments(msg, api: ApiClient, text: str, image_b64: str | None) -> None:
+    await msg.chat.send_action("typing")
+    try:
+        payload = await api.comments(text, image_b64)
+    except httpx.HTTPError as err:
+        log.warning("comments failed: %s", type(err).__name__)
+        await msg.reply_text("I couldn't check those comments. Try pasting them as text, one per line.")
+        return
+    await msg.reply_text(format_comments(payload), parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+
+
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     msg = update.effective_message
     text = (msg.text or msg.caption or "").strip()
     api: ApiClient = context.bot_data["api"]
+    image_b64 = await photo_b64(msg)
+
+    mode = context.chat_data.pop("comments_mode", None)
+    if mode and time.time() - mode < PENDING_TTL:
+        await check_comments(msg, api, text, image_b64)
+        return
 
     url = find_instagram_url(text)
     pending = context.chat_data.pop("pending_ig", None)
@@ -128,12 +206,15 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if url and text.strip() == url:
         text = ""
 
+    if not text and not url and not image_b64:
+        await msg.reply_text("Send me a caption, an Instagram link or a screenshot to check.")
+        return
     await msg.chat.send_action("typing")
     try:
-        payload = await api.start(text, url)
+        payload = await api.start(text, url, image_b64)
     except httpx.HTTPStatusError as err:
         log.warning("start failed with status %s", err.response.status_code)
-        await msg.reply_text("Hmm, I couldn't read that. Try pasting the post's text.")
+        await msg.reply_text("Hmm, I couldn't read that. Try pasting the post's text, or a clearer screenshot.")
         return
     except httpx.HTTPError as err:
         log.warning("start failed: %s", type(err).__name__)
@@ -176,7 +257,7 @@ async def on_guess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.edit_message_reply_markup(None)
     await query.message.reply_text(f"You guessed: <b>{GUESS_LABELS[guess]}</b>", parse_mode=ParseMode.HTML)
     await query.message.reply_text(format_reveal(r.json()), parse_mode=ParseMode.HTML,
-                                   disable_web_page_preview=True)
+                                   disable_web_page_preview=True, reply_markup=comments_keyboard())
 
 
 def main() -> None:
@@ -186,8 +267,11 @@ def main() -> None:
     app = Application.builder().token(settings.telegram_bot_token).build()
     app.bot_data["api"] = ApiClient(settings.api_base_url)
     app.add_handler(CommandHandler(["start", "help"], cmd_start))
+    app.add_handler(CommandHandler("comments", cmd_comments))
     app.add_handler(CallbackQueryHandler(on_guess, pattern=r"^g\|"))
-    app.add_handler(MessageHandler((filters.TEXT | filters.CAPTION) & ~filters.COMMAND, on_message))
+    app.add_handler(CallbackQueryHandler(on_comments_button, pattern=r"^comments$"))
+    app.add_handler(MessageHandler((filters.TEXT | filters.CAPTION | filters.PHOTO | filters.Document.IMAGE)
+                                   & ~filters.COMMAND, on_message))
     log.info("bot running against %s", settings.api_base_url)
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 

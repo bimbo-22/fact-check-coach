@@ -12,11 +12,19 @@
   </header>
 
   <section id="input-view">
+    <div class="tabs" role="tablist">
+      <button id="tab-post" class="tab active" role="tab" aria-selected="true">Check a post</button>
+      <button id="tab-comments" class="tab" role="tab" aria-selected="false">Check comments</button>
+    </div>
     <button id="check-ig" class="secondary" hidden>Check this Instagram post</button>
-    <label for="post-text">Paste a caption or post text</label>
-    <textarea id="post-text" rows="5" maxlength="2000" placeholder="e.g. Scientists CONFIRM 5G towers make people sick!!! link in bio"></textarea>
+    <label id="text-label" for="post-text">Paste a caption or post text</label>
+    <textarea id="post-text" rows="5" maxlength="4000" placeholder="e.g. Scientists CONFIRM 5G towers make people sick!!! link in bio"></textarea>
+    <label for="image-input">…or add a screenshot</label>
+    <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp" />
     <button id="check-btn">Check it</button>
   </section>
+
+  <section id="comments-view" hidden></section>
 
   <section id="start-view" hidden>
     <p class="label">The claim</p>

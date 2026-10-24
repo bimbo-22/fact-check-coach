@@ -47,3 +47,17 @@ def test_agreement_text_variants():
         "3 of 6 outlets checked cover it: 2 say it's false, 1 says it's true."
     assert agreement_text("true", {**base, "supports": 1, "contradicts": 0}) == \
         "1 of 6 outlets checked cover it; 1 says it's true."
+
+
+def test_format_comments(client):
+    from bot.telegram_bot import format_comments
+    from tests.test_comments import COMMENTS
+    out = format_comments(client.post("/comments/check", json={"text": COMMENTS}).json())
+    assert "🚩 <b>1 spreads misinformation</b>" in out
+    assert "✅ <b>1 is backed by the sources</b>" in out
+    assert "Opinion: can't be fact-checked" in out and "💡 <b>Tip:</b>" in out
+
+
+def test_format_comments_empty_note():
+    from bot.telegram_bot import format_comments
+    assert format_comments({"comments": [], "note": "Paste <them>"}) == "Paste &lt;them&gt;"

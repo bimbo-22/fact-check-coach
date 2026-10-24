@@ -65,3 +65,15 @@ details { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 8p
 .dots { letter-spacing: 3px; margin-top: 4px; }
 .dot-right { color: var(--true); }
 .dot-wrong { color: var(--muted); }
+.tabs { display: flex; gap: 6px; margin-bottom: 6px; }
+.tab { flex: 1; margin-top: 0; background: transparent; color: var(--fg); border: 1px solid var(--border); }
+.tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+input[type="file"] { padding: 6px; }
+.comments { list-style: none; padding: 0; }
+.comment { padding: 8px 10px; margin-bottom: 6px; border-radius: 6px; border-left: 4px solid var(--border); background: color-mix(in srgb, var(--fg) 4%, transparent); }
+.comment.verdict-false { border-left-color: var(--false); }
+.comment.verdict-true { border-left-color: var(--true); }
+.comment.verdict-misleading { border-left-color: var(--misleading); }
+.comment a { color: var(--accent); font-weight: 600; display: block; margin-top: 2px; }
+.flag-bad { color: var(--false); font-weight: 600; margin: 2px 0; }
+.flag-good { color: var(--true); font-weight: 600; margin: 2px 0; }
