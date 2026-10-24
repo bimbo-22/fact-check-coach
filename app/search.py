@@ -22,7 +22,8 @@ class SearchResult:
     url: str
     title: str
     is_claimreview: bool = False
-    rating: str | None = None  # ClaimReview textualRating
+    rating: str | None = None  # ClaimReview textualRating (shown to the user; never decides direction)
+    reviewed_claim: str | None = None  # the claim the ClaimReview judged, which may differ from ours
     outlet_id: str = ""
     # Page text supplied by the search provider: used when the outlet blocks our own fetch
     # (Reuters, AP and AFP return 401/403 to non-browser clients). Quotes are verified against it all the same.
@@ -74,7 +75,8 @@ class GoogleFactCheckSearch(SearchProvider):
                 if not (outlet_for_url(url) or (site and outlet_for_url(f"https://{site}"))):
                     continue
                 results.append(SearchResult(url=url, title=review.get("title") or c.get("text", "")[:120],
-                                            is_claimreview=True, rating=review.get("textualRating")))
+                                            is_claimreview=True, rating=review.get("textualRating"),
+                                            reviewed_claim=c.get("text")))
         return results
 
 

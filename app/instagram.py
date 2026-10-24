@@ -20,7 +20,7 @@ BROWSER_UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.3
               "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 IG_URL_RE = re.compile(
     r"https?://(?:www\.|m\.)?instagram\.com/(?:[\w.]+/)?(p|reel|reels|tv)/([\w-]+)", re.I)
-META_RE = re.compile(r'<meta\s+[^>]*property="og:(description|title)"\s+content="([^"]*)"', re.I)
+META_RE = re.compile(r'<meta\s+[^>]*property="og:(description|title|image)"\s+content="([^"]*)"', re.I)
 # "1,204 likes, 88 comments - some.user on March 3, 2019: "caption"."
 DESC_RE = re.compile(
     r'^(?:.*?-\s+)?[\w.]+\s+on\s+(?P<date>[A-Z][a-z]+ \d{1,2}, \d{4}):\s*"(?P<cap>.*)"\s*\.?\s*$', re.S)
@@ -37,6 +37,7 @@ class CaptionResult:
     caption: str | None
     post_date: date | None
     is_reel: bool
+    image_url: str | None = None  # public preview image (og:image): may be a screenshot of a headline
 
 
 def find_instagram_url(*candidates: str | None) -> str | None:
@@ -49,6 +50,10 @@ def find_instagram_url(*candidates: str | None) -> str | None:
 def is_reel_url(url: str) -> bool:
     m = IG_URL_RE.search(url)
     return bool(m and m.group(1).lower() in ("reel", "reels", "tv"))
+
+
+def og_image(page: str) -> str | None:
+    return next((html.unescape(v) for k, v in META_RE.findall(page) if k.lower() == "image"), None)
 
 
 def parse_og(page: str) -> tuple[str | None, date | None]:
@@ -75,7 +80,7 @@ async def get_caption(url: str, client: httpx.AsyncClient | None = None) -> Capt
         if r.status_code != 200:
             return CaptionResult(None, None, reel)
         caption, posted = parse_og(r.text)
-        return CaptionResult(caption, posted, reel)
+        return CaptionResult(caption, posted, reel, og_image(r.text))
     except httpx.HTTPError as e:
         log.info("instagram fetch failed: %s", type(e).__name__)
         return CaptionResult(None, None, reel)

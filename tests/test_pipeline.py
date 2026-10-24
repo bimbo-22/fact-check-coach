@@ -93,3 +93,27 @@ async def test_blocked_fetch_falls_back_to_search_provider_text(pipeline):
     pipeline.llm = StanceFromText(FIXTURES)
     ev = (await pipeline.run(post("false_5g")["caption"])).evidence
     assert ev.verdict == "false" and ev.agreement.contradicts == 2 and ev.agreement.rejected_quotes == 0
+
+
+async def test_unreachable_claimreview_is_read_from_its_structured_data(pipeline):
+    from app.search import SearchResult
+
+    class ClaimReviewOnly:
+        name = "cr-only"
+
+        async def search(self, claim):
+            return [SearchResult("https://www.reuters.com/fact-check/unreachable/", "R", is_claimreview=True,
+                                 rating="False", reviewed_claim="5G towers make people sick")]
+
+    class Labeller(type(pipeline.llm)):
+        async def _complete(self, task, system, user):
+            if task == "stance":
+                assert 'Claim reviewed: "5G towers make people sick". Rating: False.' in user
+                return '{"stance": "contradicts", "quote": "Claim reviewed: \\"5G towers make people sick\\". Rating: False."}'
+            return await super()._complete(task, system, user)
+
+    pipeline.search = ClaimReviewOnly()
+    pipeline.llm = Labeller(FIXTURES)
+    ev = (await pipeline.run(post("false_5g")["caption"])).evidence
+    assert (ev.verdict, ev.agreement.contradicts) == ("false", 1)
+    assert ev.sources[0].rating == "False" and ev.sources[0].is_claimreview

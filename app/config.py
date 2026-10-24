@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     ica_base_url: str = "https://api.servicesessentials.ibm.com/v1"
     ica_model: str = "ibm/granite-4-h-small"
 
+    # Screenshot reading. auto = same service as LLM_PROVIDER (ica/ollama), else offline mock.
+    vision_provider: Literal["auto", "mock", "ica", "ollama"] = "auto"
+    ica_vision_model: str = "meta-llama/llama-4-maverick-17b-128e-instruct-fp8"  # open weights
+    ollama_vision_model: str = "qwen2.5vl:7b"
+
     # Open-source Granite on this machine (ollama pull granite4.1:8b)
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "granite4.1:8b"

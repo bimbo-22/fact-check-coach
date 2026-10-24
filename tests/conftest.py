@@ -16,6 +16,7 @@ from app.llm.mock import MockLLM  # noqa: E402
 from app.main import create_app  # noqa: E402
 from app.pipeline import Pipeline  # noqa: E402
 from app.search import MockSearch  # noqa: E402
+from app.vision import MockVision  # noqa: E402
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -48,7 +49,7 @@ def settings() -> Settings:
 @pytest.fixture
 def pipeline(settings) -> Pipeline:
     return Pipeline(MockLLM(FIXTURES), MockSearch(FIXTURES), FixtureFetcher(FIXTURES), settings,
-                    instagram_fetch=fixture_instagram_fetch)
+                    instagram_fetch=fixture_instagram_fetch, vision=MockVision(FIXTURES))
 
 
 @pytest.fixture

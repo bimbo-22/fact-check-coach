@@ -1,5 +1,4 @@
 """Deterministic verdict rules: one vote per outlet. No LLM involved."""
-import re
 from collections import Counter
 from dataclasses import dataclass, field
 
@@ -14,22 +13,6 @@ MISLEADING_MIN = 3          # total weighted votes before split evidence counts 
 HIGH_CONF_MIN = 4           # high confidence: ≥4 weighted, no opposition...
 HIGH_CONF_OUTLETS = 2       # ...from at least 2 distinct outlets
 MISLEADING_MEDIUM_MIN = 4   # misleading with this much evidence is medium confidence
-
-# ClaimReview textualRating → stance. Ratings not listed here are ignored (e.g. "Mixture", "Half True").
-RATING_MAP = {
-    "false": "contradicts", "pants on fire": "contradicts", "fake": "contradicts",
-    "incorrect": "contradicts", "not true": "contradicts", "fabricated": "contradicts",
-    "wrong": "contradicts", "hoax": "contradicts", "mostly false": "contradicts", "altered": "contradicts",
-    "true": "supports", "correct": "supports", "accurate": "supports", "mostly true": "supports",
-}
-
-
-def rating_to_stance(rating: str | None) -> str | None:
-    if not rating:
-        return None
-    key = re.sub(r"[^a-z ]", "", rating.lower()).strip()
-    return RATING_MAP.get(key)
-
 
 @dataclass
 class Evidence:
@@ -65,10 +48,12 @@ def outlet_votes(evidence: list[Evidence]) -> list[OutletVote]:
 
     votes = []
     for outlet_id, items in by_outlet.items():
-        # 1. A ClaimReview with a known rating decides the outlet's stance.
-        rated = Counter(s for e in items if e.is_claimreview and (s := rating_to_stance(e.rating)))
-        if rated:
-            top = rated.most_common()
+        # 1. A published fact-check that addresses OUR claim decides the outlet's stance (weight 2).
+        #    Its direction is the verified stance on our claim, never its rating: "False" judges the claim
+        #    *it* reviewed, which may be the opposite of ours (e.g. a comment debunking the post).
+        reviews = Counter(e.stance for e in items if e.is_claimreview and e.stance != "not_mentioned")
+        if reviews:
+            top = reviews.most_common()
             if len(top) == 1 or top[0][1] > top[1][1]:
                 votes.append(OutletVote(outlet_id, top[0][0], CLAIMREVIEW_WEIGHT))
                 continue

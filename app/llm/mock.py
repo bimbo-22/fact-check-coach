@@ -28,7 +28,8 @@ STOPWORDS = {
 }
 
 
-HEADERS = ("POST", "CLAIM", "SOURCE URL", "SOURCE TEXT", "VERDICT", "VERIFIED QUOTES")
+HEADERS = ("POST", "COMMENTS", "CLAIM", "SOURCE URL", "SOURCE TEXT", "VERDICT", "VERIFIED QUOTES")
+FEELING_RE = re.compile(r"\b(scary|scared|lol|omg|wow|crazy|insane|honestly|cute|sad|angry)\b", re.I)
 
 
 def _section(user: str, label: str) -> str:
@@ -71,6 +72,9 @@ class MockLLM(LLMClient):
                 _section(user, "CLAIM"), _section(user, "SOURCE URL"), _section(user, "SOURCE TEXT")))
         if task == "explain":
             return self._explain(user)
+        if task == "split_comments":
+            return json.dumps({"comments": [self._sort_comment(l) for l in _section(user, "COMMENTS").splitlines()
+                                            if l.strip()]})
         raise ValueError(f"unknown task {task}")
 
     def _extract(self, post: str) -> dict:
@@ -85,9 +89,23 @@ class MockLLM(LLMClient):
             "language": "en",
         }
 
+    def _sort_comment(self, line: str) -> dict:
+        line = line.strip()
+        if line.endswith("?"):
+            return {"text": line, "kind": "question", "claim": None}
+        if OPINION_RE.search(line) or FEELING_RE.search(line):
+            return {"text": line, "kind": "opinion", "claim": None}
+        return {"text": line, "kind": "claim", "claim": line}
+
     def _stance(self, claim: str, url: str, text: str) -> dict:
         if url in self.stances:
-            return self.stances[url]
+            scripted = self.stances[url]
+            # Scripted stances are written against the positive claim; a negated claim ("there is no
+            # evidence that…") flips them, so a debunking comment is correctly backed.
+            if NEGATION_RE.search(claim) and scripted["stance"] in ("supports", "contradicts"):
+                flipped = "supports" if scripted["stance"] == "contradicts" else "contradicts"
+                return {**scripted, "stance": flipped}
+            return scripted
         keys = set(_keywords(claim))
         if not keys:
             return {"stance": "not_mentioned", "quote": None}

@@ -1,0 +1,13 @@
+{
+  "id": "screenshot_5g",
+  "caption": "BREAKING NEWS\nScientists confirm that 5G towers make people sick, new study finds\nThe Daily World Herald (fixture)\n",
+  "is_reel": false,
+  "expected_verdict": "false",
+  "note": "Text of tests/fixtures/images/headline_5g.png, as the vision model transcribes it",
+  "mock_extraction": {
+    "claim": "A new study shows 5G towers make people sick.",
+    "checkable": true,
+    "breaking_news": true,
+    "language": "en"
+  }
+}

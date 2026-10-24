@@ -11,10 +11,12 @@ from app.fetcher import FixtureFetcher, HttpFetcher
 from app.instagram import make_fixture_fetch
 from app.cache import CheckStore
 from app.llm import make_llm
-from app.models import (CheckRequest, RevealRequest, RevealResponse, StartResponse)
+from app.models import (CheckRequest, CommentsRequest, CommentsResponse, RevealRequest, RevealResponse,
+                        StartResponse)
 from app.outlets import all_outlets, load_sources
 from app.pipeline import CheckOutcome, Pipeline
 from app.search import make_search
+from app.vision import ImageError, decode_image, make_vision
 
 # Log only IDs, verdicts, counts and timings: never post text, usernames or chat IDs.
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -25,8 +27,17 @@ log = logging.getLogger("fcc.api")
 def build_pipeline(settings: Settings) -> Pipeline:
     if settings.search_provider == "mock":  # fully offline: saved source pages and Instagram previews
         return Pipeline(make_llm(settings), make_search(settings), FixtureFetcher(settings.fixtures_dir), settings,
-                        instagram_fetch=make_fixture_fetch(settings.fixtures_dir))
-    return Pipeline(make_llm(settings), make_search(settings), HttpFetcher(), settings)
+                        instagram_fetch=make_fixture_fetch(settings.fixtures_dir), vision=make_vision(settings))
+    return Pipeline(make_llm(settings), make_search(settings), HttpFetcher(), settings, vision=make_vision(settings))
+
+
+def image_bytes(b64: str | None) -> bytes | None:
+    if not b64:
+        return None
+    try:
+        return decode_image(b64)
+    except ImageError as e:
+        raise HTTPException(422, str(e)) from e
 
 
 def to_reveal(outcome: CheckOutcome, guess: str | None) -> RevealResponse:
@@ -52,7 +63,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     async def health() -> dict:
         p: Pipeline = app.state.pipeline
         return {"status": "ok", "llm_provider": p.llm.name, "search_provider": p.search.name,
-                "stats": p.stats}
+                "vision_provider": p.vision.name if p.vision else None, "stats": p.stats}
 
     @app.get("/sources")
     async def sources() -> dict:
@@ -62,7 +73,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     @app.post("/check/start", response_model=StartResponse)
     async def check_start(req: CheckRequest) -> StartResponse:
-        outcome = await app.state.pipeline.run(req.text, req.url)
+        outcome = await app.state.pipeline.run(req.text, req.url, image_bytes(req.image_base64), req.image_url)
         if outcome.needs_text:
             return StartResponse(check_id=None, claim=None, checkable=False, question=None,
                                  note=outcome.note, needs_text=True)
@@ -85,10 +96,18 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     @app.post("/check", response_model=RevealResponse)
     async def check_one_shot(req: CheckRequest) -> RevealResponse:
-        outcome = await app.state.pipeline.run(req.text, req.url)
+        outcome = await app.state.pipeline.run(req.text, req.url, image_bytes(req.image_base64), req.image_url)
         if outcome.needs_text:
             raise HTTPException(422, outcome.note)
         return to_reveal(outcome, None)
+
+    @app.post("/comments/check", response_model=CommentsResponse)
+    async def comments_check(req: CommentsRequest) -> CommentsResponse:
+        """Label pasted or screenshotted comments: opinion / question / claim, and check the claims."""
+        result = await app.state.pipeline.check_comments(req.text, image_bytes(req.image_base64))
+        log.info("comments client=%s opinions=%d claims=%d misinformation=%d backed=%d", req.client,
+                 result.summary.opinions, result.summary.claims, result.summary.misinformation, result.summary.backed)
+        return result
 
     return app
 

@@ -9,19 +9,23 @@ from app.cache import TTLCache, text_hash
 from app.claim_extractor import extract_claim
 from app.config import Settings
 from app.fetcher import MAX_SOURCE_CHARS, Fetcher
+from app import comments as cm
 from app.instagram import HASHTAGS_ONLY_MSG, NEEDS_TEXT_MSG, find_instagram_url, get_caption, is_reel_url
 from app.llm.base import LLMClient
-from app.models import Agreement, SourceOut
+from app.models import Agreement, CommentOut, CommentsResponse, CommentsSummary, SourceOut
 from app.outlets import all_outlets, outlet_by_id
 from app.quote_verifier import verify_label
 from app.search import SearchProvider, filter_and_rank
 from app.stance import explain, label_source
 from app.text import Signals, detect_signals, normalise_post
-from app.verdict import Evidence, decide, rating_to_stance
+from app.verdict import Evidence, decide
+from app.vision import Vision, download_image
 
 log = logging.getLogger("fcc.pipeline")
 
 OPINION_NOTE = "This looks like an opinion. Opinions can't be fact-checked, but you can ask what facts they rest on."
+NO_TEXT_IN_IMAGE_MSG = ("I couldn't find any text in that image. If it's a photo or video still, "
+                        "type what the post claims and I'll check it.")
 
 
 @dataclass
@@ -50,30 +54,51 @@ class CheckOutcome:
 
 class Pipeline:
     def __init__(self, llm: LLMClient, search: SearchProvider, fetcher: Fetcher, settings: Settings,
-                 instagram_fetch=get_caption) -> None:
+                 instagram_fetch=get_caption, vision: Vision | None = None) -> None:
         self.llm = llm
+        self.vision = vision
         self.search = search
         self.fetcher = fetcher
         self.settings = settings
         self.instagram_fetch = instagram_fetch
         self.claim_cache = TTLCache(settings.cache_ttl_seconds)  # claim hash → EvidenceResult
         self.input_cache = TTLCache(settings.cache_ttl_seconds)  # post hash → claim hash
-        self.stats = {"checks": 0, "cache_hits": 0, "rejected_quotes": 0}
+        self.stats = {"checks": 0, "cache_hits": 0, "rejected_quotes": 0, "images_read": 0, "comment_checks": 0}
 
-    async def run(self, text: str, url: str | None = None) -> CheckOutcome:
+    async def read_image(self, image: bytes | None) -> str | None:
+        """Text in a screenshot, via the vision model (transcription only)."""
+        if image is None or self.vision is None:
+            return None
+        text = await self.vision.transcribe(image)
+        if text:
+            self.stats["images_read"] += 1
+        return text
+
+    async def run(self, text: str, url: str | None = None, image: bytes | None = None,
+                  image_url: str | None = None) -> CheckOutcome:
         self.stats["checks"] += 1
         text = (text or "").strip()
         ig_url = find_instagram_url(url, text)
         post_date, is_reel = None, bool(ig_url and is_reel_url(ig_url))
+        if image is None and image_url:
+            image = await download_image(image_url)
 
         if ig_url and not normalise_post(text.replace(ig_url, "")):
             caption = await self.instagram_fetch(ig_url)
             post_date, is_reel = caption.post_date, caption.is_reel
             text = caption.caption or ""
+            if image is None and caption.image_url:  # the post's own image may be a headline screenshot
+                image = await download_image(caption.image_url)
+
+        image_text = await self.read_image(image)
+        if image_text:
+            text = f"{text}\n{image_text}".strip()
         if not text:
-            return self._needs_text(NEEDS_TEXT_MSG, is_reel)
+            return self._needs_text(NO_TEXT_IN_IMAGE_MSG if image is not None else NEEDS_TEXT_MSG, is_reel)
 
         signals = detect_signals(text, post_date=post_date, is_reel=is_reel)
+        if image_text:
+            signals.image_mentioned = True
         post = normalise_post(text, self.settings.max_input_chars)
         if not post:
             return self._needs_text(HASHTAGS_ONLY_MSG, is_reel)
@@ -102,22 +127,66 @@ class Pipeline:
                                   explanation=coach.template_explanation("unverified", Agreement(
                                       outlets_checked=len(all_outlets()), not_mentioned=len(all_outlets())))), False
 
-        claim_key = text_hash(ext.claim)
-        if cached := self.claim_cache.get(claim_key):
-            self.input_cache.set(post_key, claim_key)
-            return cached, True
-
         if not ext.checkable:
+            claim_key = text_hash(ext.claim)
             result = EvidenceResult(claim=ext.claim, checkable=False, verdict="opinion",
                                     explanation=coach.template_explanation("opinion", Agreement()))
+            self.claim_cache.set(claim_key, result)
+            hit = False
         else:
-            result = await self._check_claim(ext.claim, ext.breaking_news)
-        self.claim_cache.set(claim_key, result)
+            result, hit = await self.evidence_for_claim(ext.claim, ext.breaking_news)
+            claim_key = text_hash(ext.claim)
         self.input_cache.set(post_key, claim_key)
         log.info("checked claim verdict=%s confidence=%s sources=%d rejected=%d in %.2fs",
                  result.verdict, result.confidence, len(result.sources),
                  result.agreement.rejected_quotes, time.perf_counter() - started)
+        return result, hit
+
+    async def evidence_for_claim(self, claim: str, breaking_news: bool = False) -> tuple[EvidenceResult, bool]:
+        """Evidence for an already-extracted claim, through the claim cache."""
+        claim_key = text_hash(claim)
+        if cached := self.claim_cache.get(claim_key):
+            return cached, True
+        result = await self._check_claim(claim, breaking_news)
+        self.claim_cache.set(claim_key, result)
         return result, False
+
+    async def check_comments(self, text: str, image: bytes | None = None) -> CommentsResponse:
+        """Label each comment; check up to MAX_CLAIMS_CHECKED distinct claims against the six outlets."""
+        self.stats["comment_checks"] += 1
+        image_text = await self.read_image(image)
+        raw = "\n".join(t for t in ((text or "").strip(), image_text) if t)
+        if not raw:
+            return CommentsResponse(note=NO_TEXT_IN_IMAGE_MSG if image is not None else "Paste the comments to check.")
+
+        sorted_comments = await cm.sort_comments(self.llm, raw[: self.settings.max_input_chars * 2])
+        if sorted_comments is None:
+            return CommentsResponse(note="I couldn't separate those comments. Try pasting one comment per line.")
+
+        claims = list(dict.fromkeys(c.claim for c in sorted_comments if c.claim))
+        checked = dict(zip(claims[:cm.MAX_CLAIMS_CHECKED], await asyncio.gather(
+            *(self.evidence_for_claim(c) for c in claims[:cm.MAX_CLAIMS_CHECKED]))))
+
+        out, summary = [], CommentsSummary()
+        for c in sorted_comments:
+            if c.kind != "claim":
+                summary.opinions += c.kind == "opinion"
+                summary.questions += c.kind == "question"
+                out.append(CommentOut(text=c.text, kind=c.kind, label=cm.KIND_LABELS[c.kind]))
+                continue
+            summary.claims += 1
+            if c.claim not in checked:
+                summary.unchecked_claims += 1
+                out.append(CommentOut(text=c.text, kind="claim", claim=c.claim,
+                                      label="Not checked: too many claims in one go"))
+                continue
+            ev = checked[c.claim][0]
+            summary.misinformation += ev.verdict == "false"
+            summary.backed += ev.verdict == "true"
+            out.append(CommentOut(text=c.text, kind="claim", claim=c.claim, label=cm.LABELS[ev.verdict],
+                                  verdict=ev.verdict, confidence=ev.confidence, source=cm.best_source(ev.sources)))
+        return CommentsResponse(comments=out, summary=summary,
+                                tip=cm.comments_tip(summary.misinformation, summary.backed, summary.opinions))
 
     async def _check_claim(self, claim: str, breaking_news: bool) -> EvidenceResult:
         try:
@@ -127,9 +196,16 @@ class Pipeline:
             raw = []
         results = filter_and_rank(raw)
         pages = await self.fetcher.fetch_all([r.url for r in results])
-        for r in results:  # outlet blocked our fetch → fall back to the provider's copy of the page
-            if r.url not in pages and r.text:
+        for r in results:
+            if r.url in pages:
+                continue
+            if r.text:  # outlet blocked our fetch → fall back to the search provider's copy of the page
                 pages[r.url] = r.text[:MAX_SOURCE_CHARS]
+            elif r.is_claimreview and r.rating and r.reviewed_claim:
+                # Page unreachable: the publisher's structured ClaimReview is the source text. The LLM still
+                # has to say how it relates to OUR claim, and its quote is verified against this text.
+                pages[r.url] = (f"{outlet_by_id(r.outlet_id).name} fact-check. "
+                                f"Claim reviewed: \"{r.reviewed_claim}\". Rating: {r.rating}.")
 
         fetched = [r for r in results if r.url in pages]
         labels = await asyncio.gather(*(label_source(self.llm, claim, r.url, pages[r.url]) for r in fetched))
@@ -142,22 +218,9 @@ class Pipeline:
             stance, quote, was_rejected = verify_label(stance, quote, pages[r.url], outlet.domains[0])
             rejected += was_rejected
             evidence.append(Evidence(r.outlet_id, stance, r.is_claimreview, r.rating))
-            shown_stance = stance
-            if r.is_claimreview and (rated := rating_to_stance(r.rating)):
-                # The publisher's rating decides; drop a quote that points the other way.
-                quote = quote if stance == rated else None
-                shown_stance = rated
             rows.append((r.outlet_id, SourceOut(title=r.title, url=r.url, outlet=outlet.name,
-                                                domain=outlet.domains[0], stance=shown_stance, quote=quote,
+                                                domain=outlet.domains[0], stance=stance, quote=quote,
                                                 is_claimreview=r.is_claimreview, rating=r.rating)))
-        # A ClaimReview's rating is structured data from the publisher, so it counts even if the page didn't load.
-        for r in results:
-            if r.url not in pages and r.is_claimreview and (stance := rating_to_stance(r.rating)):
-                outlet = outlet_by_id(r.outlet_id)
-                evidence.append(Evidence(r.outlet_id, "not_mentioned", True, r.rating))
-                rows.append((r.outlet_id, SourceOut(title=r.title, url=r.url, outlet=outlet.name,
-                                                    domain=outlet.domains[0], stance=stance,
-                                                    is_claimreview=True, rating=r.rating)))
         self.stats["rejected_quotes"] += rejected
 
         vr = decide(evidence, breaking_news)
