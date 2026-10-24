@@ -28,9 +28,17 @@ STOPWORDS = {
 }
 
 
+HEADERS = ("POST", "CLAIM", "SOURCE URL", "SOURCE TEXT", "VERDICT", "VERIFIED QUOTES")
+
+
 def _section(user: str, label: str) -> str:
-    m = re.search(rf"^{label}:\s*(.*?)(?=^\w[\w ]*:|\Z)", user, re.S | re.M)
-    return m.group(1).strip() if m else ""
+    """Text after `LABEL:` up to the next prompt header that follows it (headers are fixed by our prompts)."""
+    start = user.find(f"{label}:")
+    if start == -1:
+        return ""
+    start += len(label) + 1
+    later = [i for h in HEADERS[HEADERS.index(label) + 1:] if (i := user.find(f"\n{h}:", start)) != -1]
+    return user[start:min(later) if later else len(user)].strip()
 
 
 def _keywords(text: str) -> list[str]:
