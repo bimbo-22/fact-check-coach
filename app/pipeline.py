@@ -138,6 +138,7 @@ class Pipeline:
         read = image_text[:400] if image_text else None
         flags = coach.red_flags(signals)
         if not evidence.checkable:
+            flags = [f for f in flags if not f.startswith("No source named")]  # a joke doesn't need a source
             return CheckOutcome(evidence, signals, None, coach.pick_tip(signals, "opinion"),
                                 note=OPINION_NOTE, cache_hit=hit, read_text=read, red_flags=flags)
         return CheckOutcome(evidence, signals, coach.pick_question(signals),
