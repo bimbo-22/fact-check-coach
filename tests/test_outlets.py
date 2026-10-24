@@ -43,6 +43,7 @@ def test_sources_yaml_has_exactly_six_complete_outlets():
     assert bias_checked
     for o in outlets:
         assert o.id and o.name and o.domains and o.type and o.bias_label and o.bias_source
+        assert o.bias_status in ("confirmed", "unconfirmed") and o.bias_note
 
 
 def test_every_fixture_source_but_the_decoy_is_whitelisted():

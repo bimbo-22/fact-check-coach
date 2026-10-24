@@ -1,4 +1,4 @@
-from tests.conftest import ScriptedLLM, post
+from tests.conftest import FIXTURES, ScriptedLLM, post
 
 
 async def test_false_viral_caption(pipeline):
@@ -70,3 +70,26 @@ async def test_extraction_failure_falls_back_to_unverified(pipeline):
     out = await pipeline.run("Some random statement about the moon being made of cheese.")
     assert out.evidence.verdict == "unverified"
     assert pipeline.llm.calls["extract_claim"] == 2
+
+
+async def test_blocked_fetch_falls_back_to_search_provider_text(pipeline):
+    from app.search import SearchResult
+
+    class BlockedOutletSearch:
+        name = "blocked"
+
+        async def search(self, claim):
+            text = "Fact check. There is no evidence that 5G networks make people sick, experts say."
+            return [SearchResult("https://www.reuters.com/fact-check/live-only/", "R", text=text),
+                    SearchResult("https://apnews.com/article/live-only", "A", text=text)]
+
+    class StanceFromText(type(pipeline.llm)):
+        async def _complete(self, task, system, user):
+            if task == "stance":
+                return '{"stance": "contradicts", "quote": "There is no evidence that 5G networks make people sick"}'
+            return await super()._complete(task, system, user)
+
+    pipeline.search = BlockedOutletSearch()
+    pipeline.llm = StanceFromText(FIXTURES)
+    ev = (await pipeline.run(post("false_5g")["caption"])).evidence
+    assert ev.verdict == "false" and ev.agreement.contradicts == 2 and ev.agreement.rejected_quotes == 0

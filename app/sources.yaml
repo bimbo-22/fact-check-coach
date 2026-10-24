@@ -1,7 +1,7 @@
 # The ONLY outlets whose articles count as evidence.
-# Bias labels are placeholders from AllSides: a human must re-check each one on
-# allsides.com and update bias_checked before the pitch.
-bias_checked: "unchecked"
+# Bias labels come from AllSides (perceived political lean, NOT accuracy).
+# bias_status: confirmed = seen on/through allsides.com on bias_checked date; unconfirmed = a human must check.
+bias_checked: "2026-10-24"
 
 outlets:
   - id: reuters
@@ -11,6 +11,8 @@ outlets:
     type: wire_service
     bias_label: Center
     bias_source: AllSides
+    bias_status: confirmed
+    bias_note: "AllSides: Center, high confidence."
   - id: ap
     name: AP Fact Check
     domains: [apnews.com]
@@ -18,6 +20,8 @@ outlets:
     type: wire_service
     bias_label: Left
     bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "AllSides 2023 blind survey said Lean Left; a third-party list says Left. Check allsides.com."
   - id: afp
     name: AFP Fact Check
     domains: [factcheck.afp.com]
@@ -25,6 +29,8 @@ outlets:
     type: fact_checker
     bias_label: Center
     bias_source: AllSides
+    bias_status: unconfirmed
+    bias_note: "No AllSides rating found for AFP. Check allsides.com or mark as unrated."
   - id: bbc
     name: BBC Verify
     domains: [bbc.com, bbc.co.uk]
@@ -32,6 +38,8 @@ outlets:
     type: public_broadcaster
     bias_label: Center
     bias_source: AllSides
+    bias_status: confirmed
+    bias_note: "AllSides: Center (kept in the 2024 chart update)."
   - id: snopes
     name: Snopes
     domains: [snopes.com]
@@ -39,6 +47,8 @@ outlets:
     type: fact_checker
     bias_label: Lean Left
     bias_source: AllSides
+    bias_status: confirmed
+    bias_note: "AllSides: Lean Left, medium confidence (a 2020 review had said Center)."
   - id: politifact
     name: PolitiFact
     domains: [politifact.com]
@@ -46,3 +56,5 @@ outlets:
     type: fact_checker
     bias_label: Lean Left
     bias_source: AllSides
+    bias_status: confirmed
+    bias_note: "AllSides: Lean Left, low/initial confidence."

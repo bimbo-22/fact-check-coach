@@ -8,7 +8,7 @@ from app import coach
 from app.cache import TTLCache, text_hash
 from app.claim_extractor import extract_claim
 from app.config import Settings
-from app.fetcher import Fetcher
+from app.fetcher import MAX_SOURCE_CHARS, Fetcher
 from app.instagram import HASHTAGS_ONLY_MSG, NEEDS_TEXT_MSG, find_instagram_url, get_caption, is_reel_url
 from app.llm.base import LLMClient
 from app.models import Agreement, SourceOut
@@ -127,6 +127,9 @@ class Pipeline:
             raw = []
         results = filter_and_rank(raw)
         pages = await self.fetcher.fetch_all([r.url for r in results])
+        for r in results:  # outlet blocked our fetch → fall back to the provider's copy of the page
+            if r.url not in pages and r.text:
+                pages[r.url] = r.text[:MAX_SOURCE_CHARS]
 
         fetched = [r for r in results if r.url in pages]
         labels = await asyncio.gather(*(label_source(self.llm, claim, r.url, pages[r.url]) for r in fetched))

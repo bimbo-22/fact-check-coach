@@ -66,3 +66,12 @@ def test_filter_and_rank_total_cap():
 def test_make_search_without_keys_is_empty_not_crashing():
     s = make_search(Settings(search_provider="tavily", tavily_api_key="", google_factcheck_api_key=""))
     assert isinstance(s, CompositeSearch) and s.providers == []
+
+
+@respx.mock
+async def test_tavily_returns_page_text_for_blocked_outlets():
+    route = respx.post(TavilySearch.URL).mock(return_value=httpx.Response(200, json={"results": [
+        {"url": "https://www.reuters.com/fact-check/x/", "title": "R", "content": "short", "raw_content": "full page"}]}))
+    results = await TavilySearch("k").search("claim")
+    assert results[0].text == "full page"
+    assert b'"include_raw_content":true' in route.calls[0].request.content.replace(b" ", b"")

@@ -18,6 +18,8 @@ class Outlet:
     type: str
     bias_label: str
     bias_source: str
+    bias_status: str = "unconfirmed"
+    bias_note: str = ""
 
     def public(self) -> dict:
         return {
@@ -27,6 +29,8 @@ class Outlet:
             "type": self.type,
             "bias_label": self.bias_label,
             "bias_source": self.bias_source,
+            "bias_status": self.bias_status,
+            "bias_note": self.bias_note,
         }
 
 
@@ -42,6 +46,8 @@ def load_sources() -> tuple[str, tuple[Outlet, ...]]:
             type=o["type"],
             bias_label=o["bias_label"],
             bias_source=o["bias_source"],
+            bias_status=o.get("bias_status", "unconfirmed"),
+            bias_note=o.get("bias_note", ""),
         )
         for o in data["outlets"]
     )

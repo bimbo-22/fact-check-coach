@@ -24,6 +24,9 @@ class SearchResult:
     is_claimreview: bool = False
     rating: str | None = None  # ClaimReview textualRating
     outlet_id: str = ""
+    # Page text supplied by the search provider: used when the outlet blocks our own fetch
+    # (Reuters, AP and AFP return 401/403 to non-browser clients). Quotes are verified against it all the same.
+    text: str | None = None
 
 
 class SearchProvider(ABC):
@@ -87,9 +90,11 @@ class TavilySearch(SearchProvider):
         async with httpx.AsyncClient(timeout=8) as client:
             r = await client.post(self.URL, headers={"Authorization": f"Bearer {self.api_key}"},
                                   json={"query": claim[:300], "include_domains": domains,
-                                        "max_results": 15, "search_depth": "basic"})
+                                        "max_results": 15, "search_depth": "basic", "include_raw_content": True})
             r.raise_for_status()
-        return [SearchResult(url=x["url"], title=x.get("title", "")) for x in r.json().get("results", [])]
+        return [SearchResult(url=x["url"], title=x.get("title", ""),
+                             text=x.get("raw_content") or x.get("content") or None)
+                for x in r.json().get("results", [])]
 
 
 class BraveSearch(SearchProvider):
@@ -104,9 +109,10 @@ class BraveSearch(SearchProvider):
         async with httpx.AsyncClient(timeout=8) as client:
             r = await client.get(self.URL, headers={"X-Subscription-Token": self.api_key,
                                                     "Accept": "application/json"},
-                                 params={"q": f"{claim[:250]} ({sites})", "count": 20})
+                                 params={"q": f"{claim[:250]} ({sites})", "count": 20, "extra_snippets": "true"})
             r.raise_for_status()
-        return [SearchResult(url=x["url"], title=x.get("title", ""))
+        return [SearchResult(url=x["url"], title=x.get("title", ""),
+                             text=" ".join([x.get("description", ""), *x.get("extra_snippets", [])]).strip() or None)
                 for x in r.json().get("web", {}).get("results", [])]
 
 
