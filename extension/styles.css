@@ -60,3 +60,8 @@ blockquote { margin: 4px 0 0; padding-left: 8px; border-left: 3px solid var(--bo
 .disclaimer { font-size: 12px; font-style: italic; }
 .status { color: var(--muted); min-height: 1em; }
 details { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 8px; }
+/* "Needs you less" progress: right/wrong shown as filled/empty dots AND a text count. */
+.progress { margin: 10px 0; padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
+.dots { letter-spacing: 3px; margin-top: 4px; }
+.dot-right { color: var(--true); }
+.dot-wrong { color: var(--muted); }

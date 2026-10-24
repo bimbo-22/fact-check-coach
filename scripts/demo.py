@@ -3,6 +3,7 @@
 Runs the real FastAPI app in-process (no server, no network, no API keys), so it works with Wi-Fi off.
 Usage: python -m scripts.demo   (or: make demo)
 """
+import argparse
 import asyncio
 import json
 import logging
@@ -11,7 +12,7 @@ import sys
 import textwrap
 from pathlib import Path
 
-os.environ["LLM_PROVIDER"] = "mock"
+os.environ.setdefault("LLM_PROVIDER", "mock")
 os.environ["SEARCH_PROVIDER"] = "mock"
 
 import httpx  # noqa: E402
@@ -46,13 +47,20 @@ def wrap(text: str, indent: str = "   ") -> str:
     return textwrap.fill(text, width=88, initial_indent=indent, subsequent_indent=indent)
 
 
-async def run() -> None:
+def recorded_cases(folder: Path) -> list:
+    """Cases from a folder made by scripts/record_fixtures.py (real outlets, real quotes)."""
+    return [(f"{i} · {p['caption'][:70]}", {"text": p["caption"]}, "true")
+            for i, p in enumerate((json.loads(f.read_text()) for f in sorted((folder / "instagram").glob("*.json"))), 1)]
+
+
+async def run(fixtures: Path, cases: list, llm_provider: str) -> None:
     logging.disable(logging.WARNING)  # the summary line reports caught hallucinations instead
-    app = create_app(Settings(llm_provider="mock", search_provider="mock", fixtures_dir=FIXTURES))
+    app = create_app(Settings(llm_provider=llm_provider, search_provider="mock", fixtures_dir=fixtures))
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://demo") as client:
-        print(c("\nFact-Check Coach · offline demo (mock LLM + saved sources)\n", "1"))
-        for title, req, guess in CASES:
+        model = "mock LLM" if llm_provider == "mock" else f"{llm_provider} LLM (real model)"
+        print(c(f"\nFact-Check Coach · demo ({model} + saved sources)\n", "1"))
+        for title, req, guess in cases:
             print(c("━" * 88, "90"))
             print(c(title, "1;34"))
             if "url" in req:
@@ -94,4 +102,12 @@ async def run() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    ap = argparse.ArgumentParser(description="Offline Fact-Check Coach demo")
+    ap.add_argument("--fixtures", type=Path, help="folder recorded by scripts/record_fixtures.py")
+    ap.add_argument("--llm", default="mock", choices=["mock", "ollama"],
+                    help="ollama = real open-source Granite reading the saved pages (still no internet)")
+    args = ap.parse_args()
+    if args.fixtures:
+        asyncio.run(run(args.fixtures, recorded_cases(args.fixtures), args.llm))
+    else:
+        asyncio.run(run(FIXTURES, CASES, args.llm))

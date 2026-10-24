@@ -12,7 +12,7 @@ FIXTURES_DIR = ROOT / "tests" / "fixtures"
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    llm_provider: Literal["mock", "watsonx", "anthropic"] = "mock"
+    llm_provider: Literal["mock", "ollama", "watsonx", "anthropic"] = "mock"
     # google_factcheck = ClaimReviews only; tavily / brave = ClaimReviews (if key set) + web search
     search_provider: Literal["mock", "google_factcheck", "tavily", "brave"] = "mock"
 
@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     watsonx_project_id: str = ""
     watsonx_url: str = "https://us-south.ml.cloud.ibm.com"
     watsonx_model_id: str = "ibm/granite-3-8b-instruct"
+
+    # Open-source Granite on this machine (ollama pull granite4.1:8b)
+    ollama_url: str = "http://localhost:11434"
+    ollama_model: str = "granite4.1:8b"
 
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-haiku-5-5"

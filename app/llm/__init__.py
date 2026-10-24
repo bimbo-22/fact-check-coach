@@ -3,6 +3,10 @@ from app.llm.base import LLMClient, LLMError
 
 
 def make_llm(settings: Settings) -> LLMClient:
+    if settings.llm_provider == "ollama":
+        from app.llm.ollama import OllamaLLM
+
+        return OllamaLLM(settings.ollama_url, settings.ollama_model)
     if settings.llm_provider == "watsonx":
         from app.llm.watsonx import WatsonxLLM
 

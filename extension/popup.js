@@ -129,11 +129,48 @@ function renderReveal(p, guess) {
   show("reveal-view");
 }
 
+// "Needs you less" tracker: only right/wrong flags are kept, in this browser. No post content.
+const HISTORY_SIZE = 10;
+const SKILLED_AT = 0.8; // ≥ 8 of the last 10 right → nudge the user to check sources first themselves
+
+function guessWasRight(guess, verdict) {
+  if (verdict === "opinion") return null; // no right answer, not scored
+  if (verdict === "true" || verdict === "false") return guess === verdict;
+  return guess === "not_sure"; // misleading / unverified / developing: caution was the right call
+}
+
+async function recordGuess(guess, verdict) {
+  const right = guessWasRight(guess, verdict);
+  let history = [];
+  try { history = (await chrome.storage.local.get("history")).history || []; } catch (_) {}
+  if (right !== null) {
+    history = [...history, right].slice(-HISTORY_SIZE);
+    try { await chrome.storage.local.set({ history }); } catch (_) {}
+  }
+  return history;
+}
+
+function renderProgress(history) {
+  if (!history.length) return null;
+  const right = history.filter(Boolean).length;
+  const box = el("div", null, "progress");
+  box.append(el("strong", `Your last ${history.length} guess${history.length > 1 ? "es" : ""}: ${right} right`));
+  const dots = el("div", null, "dots");
+  for (const h of history) dots.append(el("span", h ? "●" : "○", h ? "dot-right" : "dot-wrong"));
+  box.append(dots);
+  if (history.length >= HISTORY_SIZE && right / history.length >= SKILLED_AT) {
+    box.append(el("p", "You're getting good at this. Next time, try opening a source yourself before you ask me.", "muted"));
+  }
+  return box;
+}
+
 async function reveal(guess) {
   status("");
   try {
     const p = await api("/check/reveal", { check_id: checkId, guess });
     renderReveal(p, guess);
+    const progress = renderProgress(await recordGuess(guess, p.verdict));
+    if (progress) $("reveal-view").insertBefore(progress, $("reveal-view").lastChild);
   } catch (e) {
     show("input-view");
     status(e.status === 410 || e.status === 404 ? "That check expired. Please check it again." : "Something went wrong. Please try again.");

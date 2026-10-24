@@ -4,6 +4,8 @@
 x-env: &env
   LLM_PROVIDER: ${LLM_PROVIDER:-mock}
   SEARCH_PROVIDER: ${SEARCH_PROVIDER:-mock}
+  OLLAMA_URL: ${OLLAMA_DOCKER_URL:-http://host.docker.internal:11434}
+  OLLAMA_MODEL: ${OLLAMA_MODEL:-granite4.1:8b}
   WATSONX_API_KEY: ${WATSONX_API_KEY:-}
   WATSONX_PROJECT_ID: ${WATSONX_PROJECT_ID:-}
   WATSONX_URL: ${WATSONX_URL:-https://us-south.ml.cloud.ibm.com}
@@ -19,6 +21,7 @@ services:
     build: { context: ., target: runtime }
     image: fact-check-coach:latest
     environment: *env
+    extra_hosts: ["host.docker.internal:host-gateway"]  # reach Ollama on the host (Linux too)
     ports: ["8000:8000"]
     restart: unless-stopped
 

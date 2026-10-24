@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 
-.PHONY: install run bot test demo docker-build docker-test docker-up docker-bot docker-demo docker-down
+.PHONY: install run bot test demo demo-granite check-providers record docker-build docker-test docker-up docker-bot docker-demo docker-down
 
 install:            ## create .venv and install everything
 	uv venv --python 3.11 .venv || python3.11 -m venv .venv
@@ -17,6 +17,15 @@ test:               ## full test suite, offline, mock providers
 
 demo:               ## offline terminal walkthrough of the 4 Instagram cases
 	$(PY) -m scripts.demo
+
+demo-granite:       ## same demo, but the real open-source Granite model (Ollama) reads the saved pages
+	$(PY) -m scripts.demo --llm ollama
+
+check-providers:    ## smoke-test every provider with a key in .env (never prints keys)
+	$(PY) -m scripts.check_providers
+
+record:             ## record live checks as offline demo data: make record CLAIMS='"caption 1" "caption 2"'
+	$(PY) -m scripts.record_fixtures --out demo_fixtures $(CLAIMS)
 
 docker-build:
 	docker compose build

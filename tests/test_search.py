@@ -75,3 +75,16 @@ async def test_tavily_returns_page_text_for_blocked_outlets():
     results = await TavilySearch("k").search("claim")
     assert results[0].text == "full page"
     assert b'"include_raw_content":true' in route.calls[0].request.content.replace(b" ", b"")
+
+
+@respx.mock
+async def test_ollama_provider_requests_json_for_reading_tasks():
+    from app.llm.ollama import OllamaLLM
+
+    route = respx.post("http://localhost:11434/api/chat").mock(
+        return_value=httpx.Response(200, json={"message": {"content": '{"stance": "not_mentioned", "quote": null}'}}))
+    llm = OllamaLLM("http://localhost:11434", "granite4.1:8b")
+    out = await llm.complete("stance", "sys", "user")
+    sent = route.calls[0].request.content.decode()
+    assert '"format":"json"' in sent.replace(" ", "") and "granite4.1:8b" in sent
+    assert "not_mentioned" in out
