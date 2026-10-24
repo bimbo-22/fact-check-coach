@@ -16,6 +16,7 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler, Con
 
 from app.config import get_settings
 from app.instagram import find_instagram_url
+from app.text import URL_RE
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logging.getLogger("httpx").setLevel(logging.WARNING)  # httpx logs URLs, which include the bot token
@@ -218,6 +219,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     text = (msg.text or msg.caption or "").strip()
     api: ApiClient = context.bot_data["api"]
     image_b64 = await photo_b64(msg)
+    log.info("message: kind=%s text_len=%d has_link=%s forwarded=%s", "photo" if image_b64 else "text",
+             len(text), bool(URL_RE.search(text)), bool(getattr(msg, "forward_origin", None)))
 
     mode = context.chat_data.pop("comments_mode", None)
     if mode and time.time() - mode < PENDING_TTL:
@@ -228,8 +231,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     pending = context.chat_data.pop("pending_ig", None)
     if not url and pending and time.time() - pending[1] < PENDING_TTL:
         url = pending[0]  # the user is replying with the caption we asked for
-    if url and text.strip() == url:
-        text = ""
+    if url and not URL_RE.sub(" ", text).strip():
+        text = ""  # just a shared link (Instagram adds ?igsh=… tracking): not the user's own words
 
     if url:
         context.chat_data["last_ig"] = (url, time.time())  # memory only, for "check the comments too"

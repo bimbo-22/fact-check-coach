@@ -1,5 +1,6 @@
 """Orchestrates: Instagram → normalise → cache → extract → search → fetch → stance → verify → verdict → coach."""
 import asyncio
+import re
 import logging
 import time
 from dataclasses import dataclass, field
@@ -22,13 +23,15 @@ from app.search import SearchProvider, filter_and_rank
 from app.models import SourceRef, WhatIsTrue
 from app.quote_verifier import quote_in_text
 from app.stance import explain, label_source, summarise_known
-from app.text import Signals, detect_signals, normalise_post
+from app.text import URL_RE, Signals, detect_signals, normalise_post
 from app.verdict import Evidence, decide
 from app.vision import Vision, download_image
 
 log = logging.getLogger("fcc.pipeline")
 
 OPINION_NOTE = "This looks like an opinion. Opinions can't be fact-checked, but you can ask what facts they rest on."
+LINK_ONLY_MSG = ("I can't open links from apps like that. Send me a screenshot of the post (quickest), "
+                 "or paste what it says, and I'll check it.")
 NOT_OUR_POST_MSG = ("I can only read comments on our own demo account's posts (that's Instagram's rule, and it keeps "
                     "other people's data out). Paste the comments or send a screenshot instead.")
 NO_TEXT_IN_IMAGE_MSG = ("There's no text in this image for me to check, and I don't judge pictures myself: "
@@ -91,15 +94,19 @@ class Pipeline:
                   image_url: str | None = None) -> CheckOutcome:
         self.stats["checks"] += 1
         text = (text or "").strip()
+        log.info("input %s", self._shape(text, url, image))
         ig_url = find_instagram_url(url, text)
         post_date, is_reel = None, bool(ig_url and is_reel_url(ig_url))
         if image is None and image_url:
             image = await download_image(image_url)
 
-        if ig_url and not normalise_post(text.replace(ig_url, "")):
+        # Links (with any tracking like ?igsh=…) aren't the user's text: only words outside URLs count.
+        if ig_url and not normalise_post(text):
             # Our own demo account → official Graph API; anyone else's post → public preview, best effort.
             own = await self.instagram_graph.find_post(ig_url) if self.instagram_graph else None
             caption = own or await self.instagram_fetch(ig_url)
+            log.info("instagram link: source=%s caption=%s preview_image=%s", "graph-api" if own else "public-preview",
+                     "read" if caption.caption else "blocked", "yes" if caption.image_url else "no")
             post_date, is_reel = caption.post_date, caption.is_reel
             text = caption.caption or ""
             if image is None and caption.image_url:  # the post's own image may be a headline screenshot
@@ -109,6 +116,7 @@ class Pipeline:
         if image_text:
             text = f"{text}\n{image_text}".strip()
         if not text:
+            log.info("outcome needs_text reason=%s", "image_without_text" if image is not None else "instagram_blocked")
             return self._needs_text(NO_TEXT_IN_IMAGE_MSG if image is not None else NEEDS_TEXT_MSG, is_reel)
 
         signals = detect_signals(text, post_date=post_date, is_reel=is_reel)
@@ -116,9 +124,13 @@ class Pipeline:
             signals.image_mentioned = True
         post = normalise_post(text, self.settings.max_input_chars)
         if not post:
-            return self._needs_text(HASHTAGS_ONLY_MSG, is_reel)
+            only_links = not normalise_post(URL_RE.sub(" ", text)) and URL_RE.search(text)
+            log.info("outcome needs_text reason=%s", "link_only" if only_links else "hashtags_only")
+            return self._needs_text(LINK_ONLY_MSG if only_links else HASHTAGS_ONLY_MSG, is_reel)
 
         evidence, hit = await self._evidence(post)
+        log.info("outcome verdict=%s checkable=%s cache_hit=%s image_text=%s", evidence.verdict, evidence.checkable,
+                 hit, "yes" if image_text else "no")
         if hit:
             self.stats["cache_hits"] += 1
         if not evidence.checkable:
@@ -126,6 +138,17 @@ class Pipeline:
                                 note=OPINION_NOTE, cache_hit=hit)
         return CheckOutcome(evidence, signals, coach.pick_question(signals),
                             coach.pick_tip(signals, evidence.verdict), cache_hit=hit)
+
+    @staticmethod
+    def _shape(text: str, url: str | None, image: bytes | None) -> str:
+        """What arrived, without content: lengths, link hosts/kinds and flags only (privacy-safe logging)."""
+        links = URL_RE.findall(text or "") + ([url] if url else [])
+        kinds = []
+        for link in links:
+            m = re.match(r"https?://(?:www\.)?([^/?#]+)(/[^/?#]*)?", link)
+            kinds.append(f"{m.group(1)}{(m.group(2) or '')[:7] if m and 'instagram' in m.group(1) else ''}" if m else "?")
+        return (f"text_len={len(text or '')} words_outside_links={len(normalise_post(text or '').split())} "
+                f"links={kinds or '-'} image={'yes' if image else 'no'}")
 
     def _needs_text(self, msg: str, is_reel: bool) -> CheckOutcome:
         return CheckOutcome(None, Signals(is_reel=is_reel), None, "", needs_text=True, note=msg)

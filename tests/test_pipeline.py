@@ -154,3 +154,20 @@ async def test_search_snippet_stubs_are_ignored(pipeline):
     calls = pipeline.stance_llm.calls["stance"]
     ev = (await pipeline.run(post("false_5g")["caption"])).evidence
     assert ev.verdict == "unverified" and pipeline.stance_llm.calls["stance"] == calls
+
+
+async def test_shared_instagram_link_with_tracking_is_treated_as_a_link(pipeline):
+    # Regression: Instagram's Share button adds ?igsh=…; that leftover was taken as "hashtags only".
+    shared = "https://www.instagram.com/reel/DPx1AbCdEfG/?igsh=MWx0dW9hYzR6bDJ5Ng=="
+    out = await pipeline.run(shared, "https://www.instagram.com/reel/DPx1AbCdEfG")
+    assert out.needs_text and "screenshot" in out.note and "hashtags" not in out.note
+
+
+async def test_shared_link_from_our_own_fixture_post_is_read(pipeline):
+    out = await pipeline.run(post("false_5g")["url"] + "?igsh=abc123", None)
+    assert out.evidence.verdict == "false"
+
+
+async def test_link_from_another_app_asks_for_screenshot(pipeline):
+    out = await pipeline.run("https://vm.tiktok.com/ZMabc123/")
+    assert out.needs_text and "can't open links" in out.note
