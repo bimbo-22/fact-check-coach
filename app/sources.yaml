@@ -1,0 +1,48 @@
+# The ONLY outlets whose articles count as evidence.
+# Bias labels are placeholders from AllSides: a human must re-check each one on
+# allsides.com and update bias_checked before the pitch.
+bias_checked: "unchecked"
+
+outlets:
+  - id: reuters
+    name: Reuters Fact Check
+    domains: [reuters.com]
+    path_hint: /fact-check/
+    type: wire_service
+    bias_label: Center
+    bias_source: AllSides
+  - id: ap
+    name: AP Fact Check
+    domains: [apnews.com]
+    path_hint: /hub/ap-fact-check
+    type: wire_service
+    bias_label: Left
+    bias_source: AllSides
+  - id: afp
+    name: AFP Fact Check
+    domains: [factcheck.afp.com]
+    path_hint: null
+    type: fact_checker
+    bias_label: Center
+    bias_source: AllSides
+  - id: bbc
+    name: BBC Verify
+    domains: [bbc.com, bbc.co.uk]
+    path_hint: /news/
+    type: public_broadcaster
+    bias_label: Center
+    bias_source: AllSides
+  - id: snopes
+    name: Snopes
+    domains: [snopes.com]
+    path_hint: /fact-check/
+    type: fact_checker
+    bias_label: Lean Left
+    bias_source: AllSides
+  - id: politifact
+    name: PolitiFact
+    domains: [politifact.com]
+    path_hint: /factchecks/
+    type: fact_checker
+    bias_label: Lean Left
+    bias_source: AllSides

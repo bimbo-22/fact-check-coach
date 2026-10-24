@@ -1,0 +1,12 @@
+{
+  "url": "https://www.bbc.co.uk/news/fixture-eiffel-tower-heat",
+  "title": "[FIXTURE - synthetic test page, not a real article] Why the Eiffel Tower grows in a heatwave",
+  "claim_keys": [
+    "eiffel"
+  ],
+  "text": "Engineers say the iron structure expands in the heat. In summer the Eiffel Tower can be up to 15cm taller than in winter.",
+  "mock_stance": {
+    "stance": "supports",
+    "quote": "In summer the Eiffel Tower can be up to 15cm taller than in winter."
+  }
+}

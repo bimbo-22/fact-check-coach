@@ -1,0 +1,12 @@
+{
+  "id": "opinion_pizza",
+  "caption": "Pineapple on pizza is honestly the worst thing ever invented 🍍🍕 fight me #foodie #pizza",
+  "is_reel": false,
+  "expected_verdict": "opinion",
+  "mock_extraction": {
+    "claim": "Pineapple on pizza is the worst food ever invented.",
+    "checkable": false,
+    "breaking_news": false,
+    "language": "en"
+  }
+}

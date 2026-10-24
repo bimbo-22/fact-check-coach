@@ -1,0 +1,12 @@
+{
+  "id": "true_eiffel",
+  "caption": "📸 Screenshot of a headline I saw: the Eiffel Tower grows up to 15 cm taller in summer because the metal expands in the heat 🗼 #paris #science",
+  "is_reel": false,
+  "expected_verdict": "true",
+  "mock_extraction": {
+    "claim": "The Eiffel Tower grows up to 15 cm taller in summer because its iron expands in the heat.",
+    "checkable": true,
+    "breaking_news": false,
+    "language": "en"
+  }
+}

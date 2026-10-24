@@ -1,0 +1,12 @@
+{
+  "url": "https://www.snopes.com/fact-check/fixture-5g-sickness/",
+  "title": "[FIXTURE - synthetic test page, not a real article] Do 5G Towers Make People Sick?",
+  "claim_keys": [
+    "5g"
+  ],
+  "text": "Claim: 5G cell towers make people sick. Rating: False. Researchers have found no link between 5G exposure and illness in humans.",
+  "mock_stance": {
+    "stance": "contradicts",
+    "quote": "Researchers have found no link between 5G exposure and illness in humans."
+  }
+}

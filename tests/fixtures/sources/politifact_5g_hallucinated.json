@@ -1,0 +1,12 @@
+{
+  "url": "https://www.politifact.com/factchecks/fixture-5g-towers/",
+  "title": "[FIXTURE - synthetic test page, not a real article] Viral posts about 5G and health",
+  "claim_keys": [
+    "5g"
+  ],
+  "text": "Social media users keep sharing posts about 5G. We looked at the scientific research on radio-frequency exposure. Studies have not found that the levels used by phone networks damage human health.",
+  "mock_stance": {
+    "stance": "supports",
+    "quote": "PolitiFact experts confirmed that 5G towers cause illness in nearby residents."
+  }
+}

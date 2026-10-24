@@ -1,0 +1,12 @@
+{
+  "url": "https://apnews.com/article/fixture-5g-health-fact-check",
+  "title": "[FIXTURE - synthetic test page, not a real article] 5G networks don't make people ill, experts say",
+  "claim_keys": [
+    "5g"
+  ],
+  "text": "CLAIM: 5G towers are making people sick. AP'S ASSESSMENT: False. Experts say there is no scientific evidence that 5G technology causes illness.",
+  "mock_stance": {
+    "stance": "contradicts",
+    "quote": "Experts say there is no scientific evidence that 5G technology causes illness."
+  }
+}

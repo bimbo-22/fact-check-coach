@@ -1,0 +1,12 @@
+{
+  "url": "https://apnews.com/article/fixture-eiffel-tower-thermal-expansion",
+  "title": "[FIXTURE - synthetic test page, not a real article] Paris landmark stretches in the sun",
+  "claim_keys": [
+    "eiffel"
+  ],
+  "text": "Thermal expansion of the tower's wrought iron means the Eiffel Tower gets taller in summer, by as much as 15 centimeters.",
+  "mock_stance": {
+    "stance": "supports",
+    "quote": "the Eiffel Tower gets taller in summer, by as much as 15 centimeters."
+  }
+}

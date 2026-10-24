@@ -1,0 +1,10 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+pydantic==2.11.4
+pydantic-settings==2.9.1
+httpx==0.28.1
+python-telegram-bot==21.11.1
+rapidfuzz==3.13.0
+trafilatura==2.0.0
+PyYAML==6.0.2
+anthropic==2.3.0

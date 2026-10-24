@@ -1,0 +1,13 @@
+{
+  "url": "https://www.reuters.com/fact-check/fixture-5g-towers-make-people-sick/",
+  "title": "[FIXTURE - synthetic test page, not a real article] Fact Check: 5G towers do not make people sick",
+  "claim_keys": [
+    "5g"
+  ],
+  "claimreview_rating": "False",
+  "text": "Posts shared on Instagram claim that scientists have confirmed 5G towers make people sick. There is no evidence that 5G networks make people sick. The radio waves used by 5G are non-ionising and the exposure levels are far below international safety limits.",
+  "mock_stance": {
+    "stance": "contradicts",
+    "quote": "There is no evidence that 5G networks make people sick."
+  }
+}

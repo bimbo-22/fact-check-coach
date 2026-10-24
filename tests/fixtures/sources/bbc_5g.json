@@ -1,0 +1,12 @@
+{
+  "url": "https://www.bbc.com/news/fixture-5g-rollout-speeds",
+  "title": "[FIXTURE - synthetic test page, not a real article] How fast is 5G where you live?",
+  "claim_keys": [
+    "5g"
+  ],
+  "text": "Mobile operators have expanded 5G coverage to most large towns. Download speeds vary widely depending on the network and the area.",
+  "mock_stance": {
+    "stance": "not_mentioned",
+    "quote": null
+  }
+}

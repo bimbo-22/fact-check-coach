@@ -1,0 +1,12 @@
+{
+  "url": "https://dailytruth-news.example/5g-exposed",
+  "title": "[FIXTURE - synthetic test page, not a real article] 5G EXPOSED",
+  "claim_keys": [
+    "5g"
+  ],
+  "text": "5G towers make people sick, insiders say.",
+  "mock_stance": {
+    "stance": "supports",
+    "quote": "5G towers make people sick, insiders say."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "url": "https://www.snopes.com/fact-check/fixture-eiffel-tower-summer/",
+  "title": "[FIXTURE - synthetic test page, not a real article] Does the Eiffel Tower Grow in Summer?",
+  "claim_keys": [
+    "eiffel"
+  ],
+  "claimreview_rating": "True",
+  "text": "Claim: The Eiffel Tower gets taller in the summer. Rating: True. Because iron expands when it heats up, the Eiffel Tower can grow by up to around 15 centimetres on hot days.",
+  "mock_stance": {
+    "stance": "supports",
+    "quote": "the Eiffel Tower can grow by up to around 15 centimetres on hot days."
+  }
+}

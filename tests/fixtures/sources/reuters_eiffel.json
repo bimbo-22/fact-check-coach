@@ -1,0 +1,12 @@
+{
+  "url": "https://www.reuters.com/fact-check/fixture-eiffel-tower-height/",
+  "title": "[FIXTURE - synthetic test page, not a real article] Fact Check: Eiffel Tower height changes with temperature",
+  "claim_keys": [
+    "eiffel"
+  ],
+  "text": "The tower's official operator says its height varies with temperature. The Eiffel Tower grows by several centimetres in summer heat.",
+  "mock_stance": {
+    "stance": "supports",
+    "quote": "The Eiffel Tower grows by several centimetres in summer heat."
+  }
+}

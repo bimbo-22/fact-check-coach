@@ -1,0 +1,12 @@
+{
+  "url": "https://factcheck.afp.com/fixture-5g-health-claims",
+  "title": "[FIXTURE - synthetic test page, not a real article] No, 5G does not cause illness",
+  "claim_keys": [
+    "5g"
+  ],
+  "text": "A viral post says 5G masts are harming people's health. Health agencies say 5G radio waves are far below levels that could harm people, and claims that 5G makes people sick are false. The World Health Organization says no adverse health effects have been linked to wireless networks.",
+  "mock_stance": {
+    "stance": "contradicts",
+    "quote": "claims that 5G makes people sick are false"
+  }
+}

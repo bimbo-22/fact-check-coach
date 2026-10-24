@@ -1,0 +1,13 @@
+{
+  "id": "false_5g",
+  "url": "https://www.instagram.com/p/FCCFIX5G01/",
+  "caption": "😱 Scientists CONFIRM that 5G towers make people sick!!! Share before they delete this 👉 link in bio #5G #health #wakeup #truth #share",
+  "is_reel": false,
+  "expected_verdict": "false",
+  "mock_extraction": {
+    "claim": "5G mobile phone towers make people sick.",
+    "checkable": true,
+    "breaking_news": false,
+    "language": "en"
+  }
+}

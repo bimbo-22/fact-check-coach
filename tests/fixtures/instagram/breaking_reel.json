@@ -1,0 +1,12 @@
+{
+  "id": "breaking_reel",
+  "caption": "🚨 BREAKING: a huge earthquake just hit Lisbon right now, buildings are collapsing!! #breaking #news #lisbon #earthquake",
+  "is_reel": true,
+  "expected_verdict": "developing",
+  "mock_extraction": {
+    "claim": "A major earthquake has just hit Lisbon and buildings are collapsing.",
+    "checkable": true,
+    "breaking_news": true,
+    "language": "en"
+  }
+}
