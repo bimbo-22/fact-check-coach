@@ -15,6 +15,7 @@ let apiBase = DEFAULT_API;
 let checkId = null;
 let pendingUrl = null; // Instagram link waiting for a pasted caption
 let mode = "post"; // "post" | "comments"
+let igTabUrl = null; // active tab's Instagram post URL, if any
 const COMMENT_ICONS = { opinion: "💬", question: "❔", other: "▫️" };
 const VERDICT_COMMENT_ICONS = { false: "🚩", true: "✅", misleading: "⚠️", unverified: "❓", developing: "⏳" };
 
@@ -53,6 +54,8 @@ function setMode(next) {
   $("tab-comments").classList.toggle("active", mode === "comments");
   $("tab-post").setAttribute("aria-selected", String(mode === "post"));
   $("tab-comments").setAttribute("aria-selected", String(mode === "comments"));
+  $("check-ig").hidden = !(igTabUrl && mode === "post");
+  $("check-ig-comments").hidden = !(igTabUrl && mode === "comments");
   $("text-label").textContent = mode === "post" ? "Paste a caption or post text" : "Paste the comments (one per line)";
   $("post-text").placeholder = mode === "post"
     ? "e.g. Scientists CONFIRM 5G towers make people sick!!! link in bio"
@@ -95,6 +98,18 @@ async function startCheck(text, url, imageB64 = null, imageUrl = null) {
     show("start-view");
   } catch (e) {
     status(e.status === 422 ? "Couldn't use that. Paste some text or try a PNG/JPEG screenshot." : `Can't reach the checker at ${apiBase}. Is the API running?`);
+  }
+}
+
+async function commentsFromPost(url) {
+  status("Reading this post's comments…");
+  try {
+    const p = await api("/comments/from-post", { url, client: "extension" });
+    status("");
+    if (!p.comments.length) return status(p.note);
+    renderComments(p);
+  } catch (e) {
+    status(`Can't reach the checker at ${apiBase}.`);
   }
 }
 
@@ -283,9 +298,10 @@ async function init() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab && tab.url && IG_POST_RE.test(tab.url)) {
-      const btn = $("check-ig");
-      btn.hidden = false;
-      btn.addEventListener("click", () => startCheck("", tab.url.match(IG_POST_RE)[0]));
+      igTabUrl = tab.url.match(IG_POST_RE)[0];
+      $("check-ig").hidden = false;
+      $("check-ig").addEventListener("click", () => startCheck("", igTabUrl));
+      $("check-ig-comments").addEventListener("click", () => commentsFromPost(igTabUrl));
     }
   } catch (_) { /* opened as a context-menu window: no active-tab access needed */ }
 

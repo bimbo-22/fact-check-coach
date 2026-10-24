@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-haiku-5-5"
 
+    # Official Instagram Graph API for OUR demo account (see credentials.md). Never a password.
+    instagram_access_token: str = ""
+    instagram_user_id: str = ""
+
     google_factcheck_api_key: str = ""
     tavily_api_key: str = ""
     brave_api_key: str = ""

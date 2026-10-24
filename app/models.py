@@ -95,6 +95,11 @@ class CommentsRequest(BaseModel):
         return self
 
 
+class CommentsFromPostRequest(BaseModel):
+    url: str
+    client: Literal["telegram", "extension", "script"] = "script"
+
+
 CommentKind = Literal["opinion", "claim", "question", "other"]
 
 

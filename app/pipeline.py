@@ -11,6 +11,7 @@ from app.config import Settings
 from app.fetcher import MAX_SOURCE_CHARS, Fetcher
 from app import comments as cm
 from app.instagram import HASHTAGS_ONLY_MSG, NEEDS_TEXT_MSG, find_instagram_url, get_caption, is_reel_url
+from app.instagram_graph import InstagramGraph
 from app.llm.base import LLMClient
 from app.models import Agreement, CommentOut, CommentsResponse, CommentsSummary, SourceOut
 from app.outlets import all_outlets, outlet_by_id
@@ -24,6 +25,8 @@ from app.vision import Vision, download_image
 log = logging.getLogger("fcc.pipeline")
 
 OPINION_NOTE = "This looks like an opinion. Opinions can't be fact-checked, but you can ask what facts they rest on."
+NOT_OUR_POST_MSG = ("I can only read comments on our own demo account's posts (that's Instagram's rule, and it keeps "
+                    "other people's data out). Paste the comments or send a screenshot instead.")
 NO_TEXT_IN_IMAGE_MSG = ("I couldn't find any text in that image. If it's a photo or video still, "
                         "type what the post claims and I'll check it.")
 
@@ -54,9 +57,11 @@ class CheckOutcome:
 
 class Pipeline:
     def __init__(self, llm: LLMClient, search: SearchProvider, fetcher: Fetcher, settings: Settings,
-                 instagram_fetch=get_caption, vision: Vision | None = None) -> None:
+                 instagram_fetch=get_caption, vision: Vision | None = None,
+                 instagram_graph: InstagramGraph | None = None) -> None:
         self.llm = llm
         self.vision = vision
+        self.instagram_graph = instagram_graph
         self.search = search
         self.fetcher = fetcher
         self.settings = settings
@@ -84,7 +89,9 @@ class Pipeline:
             image = await download_image(image_url)
 
         if ig_url and not normalise_post(text.replace(ig_url, "")):
-            caption = await self.instagram_fetch(ig_url)
+            # Our own demo account → official Graph API; anyone else's post → public preview, best effort.
+            own = await self.instagram_graph.find_post(ig_url) if self.instagram_graph else None
+            caption = own or await self.instagram_fetch(ig_url)
             post_date, is_reel = caption.post_date, caption.is_reel
             text = caption.caption or ""
             if image is None and caption.image_url:  # the post's own image may be a headline screenshot
@@ -150,6 +157,16 @@ class Pipeline:
         result = await self._check_claim(claim, breaking_news)
         self.claim_cache.set(claim_key, result)
         return result, False
+
+    async def comments_from_post(self, url: str) -> CommentsResponse:
+        """Real comment section of one of OUR demo account's posts, via the official Graph API."""
+        own = await self.instagram_graph.find_post(url) if self.instagram_graph else None
+        if own is None:
+            return CommentsResponse(note=NOT_OUR_POST_MSG)
+        texts = await self.instagram_graph.comments(own.id)
+        if not texts:
+            return CommentsResponse(note="That post has no comments yet.")
+        return await self.check_comments("\n".join(" ".join(t.split()) for t in texts))
 
     async def check_comments(self, text: str, image: bytes | None = None) -> CommentsResponse:
         """Label each comment; check up to MAX_CLAIMS_CHECKED distinct claims against the six outlets."""

@@ -140,6 +140,11 @@ class ApiClient:
         r.raise_for_status()
         return r.json()
 
+    async def comments_from_post(self, url: str) -> dict:
+        r = await self.http.post("/comments/from-post", json={"url": url, "client": "telegram"})
+        r.raise_for_status()
+        return r.json()
+
     async def comments(self, text: str, image_b64: str | None = None) -> dict:
         r = await self.http.post("/comments/check", json={"text": text, "image_base64": image_b64,
                                                           "client": "telegram"})
@@ -162,7 +167,20 @@ async def cmd_comments(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def on_comments_button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """If the post was one of our demo account's, read its real comments; otherwise ask for them."""
     await update.callback_query.answer()
+    last = context.chat_data.get("last_ig")
+    if last and time.time() - last[1] < PENDING_TTL:
+        msg = update.effective_message
+        await msg.chat.send_action("typing")
+        try:
+            payload = await context.bot_data["api"].comments_from_post(last[0])
+            if payload.get("comments"):
+                await msg.reply_text(format_comments(payload), parse_mode=ParseMode.HTML,
+                                     disable_web_page_preview=True)
+                return
+        except httpx.HTTPError as err:
+            log.warning("comments-from-post failed: %s", type(err).__name__)
     await cmd_comments(update, context)
 
 
@@ -206,6 +224,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if url and text.strip() == url:
         text = ""
 
+    if url:
+        context.chat_data["last_ig"] = (url, time.time())  # memory only, for "check the comments too"
     if not text and not url and not image_b64:
         await msg.reply_text("Send me a caption, an Instagram link or a screenshot to check.")
         return

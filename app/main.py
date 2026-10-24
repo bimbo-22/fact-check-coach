@@ -11,8 +11,9 @@ from app.fetcher import FixtureFetcher, HttpFetcher
 from app.instagram import make_fixture_fetch
 from app.cache import CheckStore
 from app.llm import make_llm
-from app.models import (CheckRequest, CommentsRequest, CommentsResponse, RevealRequest, RevealResponse,
-                        StartResponse)
+from app.instagram_graph import InstagramGraph
+from app.models import (CheckRequest, CommentsFromPostRequest, CommentsRequest, CommentsResponse, RevealRequest,
+                        RevealResponse, StartResponse)
 from app.outlets import all_outlets, load_sources
 from app.pipeline import CheckOutcome, Pipeline
 from app.search import make_search
@@ -28,7 +29,10 @@ def build_pipeline(settings: Settings) -> Pipeline:
     if settings.search_provider == "mock":  # fully offline: saved source pages and Instagram previews
         return Pipeline(make_llm(settings), make_search(settings), FixtureFetcher(settings.fixtures_dir), settings,
                         instagram_fetch=make_fixture_fetch(settings.fixtures_dir), vision=make_vision(settings))
-    return Pipeline(make_llm(settings), make_search(settings), HttpFetcher(), settings, vision=make_vision(settings))
+    graph = (InstagramGraph(settings.instagram_access_token, settings.instagram_user_id)
+             if settings.instagram_access_token and settings.instagram_user_id else None)
+    return Pipeline(make_llm(settings), make_search(settings), HttpFetcher(), settings, vision=make_vision(settings),
+                    instagram_graph=graph)
 
 
 def image_bytes(b64: str | None) -> bytes | None:
@@ -107,6 +111,14 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         result = await app.state.pipeline.check_comments(req.text, image_bytes(req.image_base64))
         log.info("comments client=%s opinions=%d claims=%d misinformation=%d backed=%d", req.client,
                  result.summary.opinions, result.summary.claims, result.summary.misinformation, result.summary.backed)
+        return result
+
+    @app.post("/comments/from-post", response_model=CommentsResponse)
+    async def comments_from_post(req: CommentsFromPostRequest) -> CommentsResponse:
+        """Read and check the real comments of one of OUR demo account's posts (official Graph API)."""
+        result = await app.state.pipeline.comments_from_post(req.url)
+        log.info("comments-from-post client=%s claims=%d misinformation=%d", req.client,
+                 result.summary.claims, result.summary.misinformation)
         return result
 
     return app
