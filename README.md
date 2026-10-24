@@ -68,13 +68,32 @@ Confidence is `high` at ≥ 4 weighted votes, no opposition and ≥ 2 outlets; `
 
 ---
 
+### Screenshots
+
+Much Instagram misinformation is a screenshot of a headline with no useful caption. Send the screenshot to the bot, upload it in the extension, or right-click an image on instagram.com.
+
+A vision model **only transcribes** the visible text, with usernames and like counts removed. That text then goes through the same pipeline. The default is Llama 4 Maverick via ICA, which has open weights; `qwen2.5vl` via Ollama works offline. For an Instagram link, the post's own preview image is read too. Images are never stored or logged.
+
+### Comment sections
+
+The debunk is often buried in the comments, next to the misinformation. Paste the comments or send a screenshot (bot: `/comments`, or the *Check the comments too* button; extension: *Check comments* tab). Each comment is labelled:
+
+- 💬 **Opinion**: can't be fact-checked
+- ❔ **Question**
+- 🚩 **Misinformation**: its claim is false according to the outlets
+- ✅ **Backed by the outlets we checked**: often the buried debunk
+
+Claims are always restated positively, with a flag for whether the comment *asserts* or *denies* them. "There's no evidence 5G makes you sick" therefore checks the same claim as the post (cache hit) and is correctly marked *backed*. Language models often get negation wrong, and this design removes that failure mode.
+
+For posts on **our own demo account**, the real comment section is read through the official Instagram Graph API (`/comments/from-post`). It's never accessed with a password and never on other accounts, and usernames are never requested. See [credentials.md](credentials.md).
+
 ## Run it
 
 ### Quick start (offline, no keys)
 
 ```bash
 make install      # Python 3.11 venv + dependencies
-make test         # 137 tests, all offline in mock mode
+make test         # 163 tests, all offline in mock mode
 make demo         # terminal walkthrough of the 4 Instagram cases (works with Wi-Fi off)
 make run          # API on http://localhost:8000  (docs at /docs)
 ```
@@ -123,6 +142,9 @@ The API address is configurable under *Settings* in the popup (default `http://l
 | `POST /check/start` | `{text, url?, client}` → claim + question. **Never** includes the verdict. |
 | `POST /check/reveal` | `{check_id, guess}` → full result. 404 unknown id, 410 expired (15 min). |
 | `POST /check` | One-shot for scripts (front ends must use start → reveal) |
+| `POST /check/start` with `image_base64` / `image_url` | Same flow from a screenshot (image URLs: Instagram/Facebook CDNs only) |
+| `POST /comments/check` | `{text?, image_base64?}` → each comment labelled opinion / question / misinformation / backed |
+| `POST /comments/from-post` | `{url}` → real comments of one of our demo account's posts (official Graph API) |
 
 ---
 
@@ -135,14 +157,15 @@ The API address is configurable under *Settings* in the popup (default `http://l
 | **Explainable reasoning** | Published, deterministic rules with named constants. The LLM only reads. |
 | **Visible uncertainty** | `unverified` and `developing` are normal answers. Confidence is always shown. The disclaimer says "check them yourself". |
 | **Safeguards against hallucinated references** | Every LLM quote is matched against the fetched page (normalised, fuzzy ≥ 90). A fake quote is thrown out, its label is downgraded and it is counted in `rejected_quotes`, which the user can see. Tested with a planted hallucination. |
-| **Unsupported claims** | Opinions are detected and not "fact-checked". |
+| **Unsupported claims** | Opinions are detected and not "fact-checked", in posts and in comments. Misinformation in comments is flagged, and comments backed by the outlets are highlighted. |
+| **Images** | Vision model is told to transcribe only (no interpretation). UI text and usernames are removed. Images are not stored. Image URLs are allowlisted to Instagram/Facebook CDNs. |
 | **Fairness** | Named whitelist with public bias labels, one vote per outlet, and an openly stated lean. |
 | **Privacy** | No post text, usernames or chat IDs are stored or logged (tested). The cache key is a SHA-256 hash. Instagram usernames and like counts are stripped before processing. No login, no scraping libraries, no comments or profiles. API keys are kept out of logs. |
 | **Resource use** | Cache by post hash and claim hash, so a repeat check makes zero LLM calls (tested). Small model at low effort, narrow tasks, capped source text, 12-second fetch budget. |
 
 ## Honesty: what works vs. what's a concept
 
-**Works today:** Telegram bot, Chrome extension, Instagram captions (best effort, with a paste fallback), 6-outlet search via Google Fact Check + Tavily/Brave, quote verification, verdict rules, coaching, cache, offline demo, Docker, 137 tests.
+**Works today:** Telegram bot, Chrome extension (tested in Chromium), Instagram captions (best effort, with a paste fallback), **screenshot reading**, **comment-section checking**, official Graph API for the demo account, 6-outlet search via Google Fact Check + Tavily/Brave, quote verification, verdict rules, coaching, progress tracker, cache, offline demo, Docker, 163 tests.
 
 **Verified with real models (24 Oct 2026):** on the four demo cases, IBM Granite 4H Small (via ICA), Llama 3.3 70B, Claude Haiku 5.5 (via ICA) and Granite 4.1 8B (local, via Ollama) all gave the expected verdicts, and every quote they returned passed verification. Gemma 4 also got every verdict right, with one lower confidence. `make check-providers` re-runs the key checks.
 
@@ -151,7 +174,7 @@ The API address is configurable under *Settings* in the popup (default `http://l
 **Fixtures are synthetic.** The pages under `tests/fixtures/sources/` are labelled `[FIXTURE]` and are not real articles. Before the pitch, run the real demo claims live once and save the results as fixtures.
 
 **Concepts / next:**
-- Reel audio transcription and on-screen text (OCR). Today we read the caption only.
+- Reel audio transcription and video frames. Today we read a Reel's caption and preview image only.
 - Adaptive tips that fade as the user improves.
 - Follow-up when a `developing` story resolves.
 - WhatsApp bot.
@@ -163,7 +186,8 @@ The API address is configurable under *Settings* in the popup (default `http://l
 - **Coverage:** six English-language, mostly US/UK outlets. Local or non-English claims will often be `unverified`.
 - **Breaking news:** usually `developing` until at least two outlets report it, by design.
 - **Instagram access:** logged-out previews are often blocked, so the user may need to paste the caption.
-- **Text only:** images and video are not analysed.
+- **Images:** text in images is read; photos without text (e.g. a doctored picture) are not analysed. Video and audio are not analysed.
+- **Comments of other accounts' posts** can't be read automatically (Instagram rule). Users paste or screenshot them.
 - **Bias labels** are third-party ratings (AllSides) and are themselves contested.
 
 ## Project layout
@@ -173,5 +197,5 @@ app/        API, pipeline, verdict rules, quote verifier, coach, providers (llm/
 bot/        Telegram bot
 extension/  Chrome extension (MV3, no build step)
 scripts/    demo.py
-tests/      137 tests + Instagram and source fixtures
+tests/      163 tests + Instagram, image and source fixtures
 ```
