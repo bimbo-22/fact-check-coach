@@ -1,0 +1,580 @@
+[
+  {
+    "id": "ig001",
+    "post_claim": "Costco sells beef from cattle injected with mRNA vaccines",
+    "label": "false",
+    "verdict_quote": "There are currently no mRNA vaccines licensed and approved for use in beef cattle.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.42B22ZR",
+    "review_title": "Claims of 'mRNA vaccine in Costco beef' recirculate debunked theories | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig002",
+    "post_claim": "Covid vaccines cause a 50% excess infant mortality rate",
+    "label": "false",
+    "verdict_quote": "But experts told AFP there is no evidence Covid-19 vaccines are causing the increase -- and AFP's review of Mississippi's communications about the public health emergency did not show any mention of concerns regarding the shots.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.A88D6G7",
+    "review_title": "US infant mortality uptick falsely linked to Covid-19 vaccination | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig003",
+    "post_claim": "Covid vaccines alter your DNA",
+    "label": "false",
+    "verdict_quote": "One of the videos with inaccurate claims was made by osteopath Carrie Madej and circulated online at the end of July. In it, she falsely suggests that the vaccines are designed to change people’s DNA “to make us into genetically modified organisms” and to “hook us all up to an artificial intelligence interface”. Scary stuff, if it were true – but there is no evidence at all that this is the plan.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.co.uk/bitesize/articles/zgfgf82",
+    "review_title": "Five Covid-19 vaccine false theories - debunked - BBC Bitesize",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig004",
+    "post_claim": "Celery juice can cure chronic illnesses such as fibromyalgia, cancer and diabetes",
+    "label": "false",
+    "verdict_quote": "But he doesn't have any medical qualifications, and doctors say many of his claims about celery and other vegetables and fruits aren't backed up by science.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.com/news/blogs-trending-49763144",
+    "review_title": "Celery Juice: The big problem with a viral Instagram 'cure'",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig005",
+    "post_claim": "Cancer is a survival mechanism and most people die from cancer treatment, not the disease itself",
+    "label": "false",
+    "verdict_quote": "Cancer is definitely not a body's defensive mechanism",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.43BN8T2",
+    "review_title": "Experts confirm cancer treatment saves lives after US podcast airs baseless pseudoscientific claims | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig006",
+    "post_claim": "Influencers sell fake cures for PCOS",
+    "label": "misleading",
+    "verdict_quote": "Up to 70% of women with PCOS worldwide have not been diagnosed, according to the World Health Organization (WHO), and even when diagnosed, women struggle to find treatments that work.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.com/news/articles/ckgz2p0999yo",
+    "review_title": "Influencers selling fake cures for polycystic ovary syndrome",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig007",
+    "post_claim": "Belle Gibson claimed she cured her inoperable brain cancer through healthy eating",
+    "label": "false",
+    "verdict_quote": "But that's when the cracks began to show in Belle’s story and Maxine began to question her beliefs.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.co.uk/bbcthree/article/b2538e04-87f5-4af5-bd6f-f6cf88b488c4",
+    "review_title": "Belle Gibson: The influencer who lied about having cancer - BBC Three",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig008",
+    "post_claim": "5G technology helps transmit coronavirus",
+    "label": "false",
+    "verdict_quote": "Scientists say the idea of a connection between Covid-19 and 5G is \"complete rubbish\" and biologically impossible.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.com/news/52168096",
+    "review_title": "Coronavirus: Scientists brand 5G claims 'complete rubbish'",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig009",
+    "post_claim": "5G networks cause coronavirus",
+    "label": "false",
+    "verdict_quote": "Public Health England have said “there should be no consequences for public health” with the addition of 5G networks, and independent fact-checking charity Full Fact concluded “there is no evidence that 5G WiFi networks are linked to the new coronavirus.”",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.co.uk/bitesize/articles/zbw492p",
+    "review_title": "5G and coronavirus: Debunking the fake news stories - BBC Bitesize",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig010",
+    "post_claim": "Greta Thunberg said, “the climate crisis doesn’t exist.”",
+    "label": "false",
+    "verdict_quote": "We rate this post Pants on Fire.",
+    "outlet": "PolitiFact",
+    "review_url": "https://politifact.com/factchecks/2021/jun/22/instagram-posts/manipulated-video-distorts-greta-thunbergs-comment",
+    "review_title": "Manipulated video distorts Greta Thunberg’s comments on climate change – PolitiFact",
+    "instagram_urls": [
+      "https://www.instagram.com/tv/CQY_JITnBYe"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig011",
+    "post_claim": "An old photo shows Republican ballots being fraudulently discarded in the 2024 US election",
+    "label": "false",
+    "verdict_quote": "In fact, the image -- cropped from a photo by a US newspaper -- showed a poll officer handling absentee ballots in 2020.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.36LM4UE",
+    "review_title": "Old photo of ballots shared in posts baselessly claiming US election fraud | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig012",
+    "post_claim": "Trump broke up a migrant caravan in Mexico, Russian President Vladimir Putin is ready to end the war in Ukraine, Hamas called for an end to war in Gaza, the stock market hit record highs",
+    "label": "misleading",
+    "verdict_quote": "Most of the rest omitted context.",
+    "outlet": "PolitiFact",
+    "review_url": "https://politifact.com/article/2024/nov/15/fact-checking-social-media-posts-claiming-instant",
+    "review_title": "Fact-checking social media posts claiming instant policy victories for Donald Trump – PolitiFact",
+    "instagram_urls": [
+      "https://www.instagram.com/p/DCIxTMZAspO"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig013",
+    "post_claim": "Georgia removed party affiliation from midterm ballots to confuse voters",
+    "label": "false",
+    "verdict_quote": "But the law would have no bearing on the 2026 midterms -- it takes force on January 1, 2028.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.D3JC3CQ",
+    "review_title": "Georgia midterm ballots will show party affiliation, despite online warnings | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig014",
+    "post_claim": "Dozens of immigrants sleep on the ground! Trump's America is a disgrace",
+    "label": "false",
+    "verdict_quote": "The clips purporting to show the inside of a detention facility were also likely created by AI technologies.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.86Q26G3",
+    "review_title": "Videos of migrants in US facility are likely AI-generated: experts | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig015",
+    "post_claim": "The UK will be overrun by Sharia law and Islamic culture by 2050",
+    "label": "false",
+    "verdict_quote": "It is difficult to verify claims of direct state involvement, but a handful of the accounts do share posts sympathetic towards the Russian and Iranian governments. The owners of the accounts did not respond to the BBC's attempts to contact them.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.com/news/articles/ckgpyn30dp3o",
+    "review_title": "Anti-immigration AI videos traced to overseas fakers, BBC finds",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig016",
+    "post_claim": "Biden now threatening to send American sons and daughters over there if Congress doesn't pass $61 billion for Ukraine",
+    "label": "misleading",
+    "verdict_quote": "But the president did not threaten to deploy US troops to fight Russia if the budget was not approved.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.349K88P",
+    "review_title": "Online claims misrepresent White House remarks on Ukraine military aid | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig017",
+    "post_claim": "Putin threatened the US with overt military support for the Palestinians if America takes sides in the Israel-Gaza war",
+    "label": "false",
+    "verdict_quote": "But this is false: the clip is old and the purported subtitles in English are fabricated. In the original version, Putin was talking about the ongoing war in Ukraine.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.33YG8TE",
+    "review_title": "Fake subtitles added to old clip of Putin talking about Ukraine war, not Israel-Gaza conflict | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig018",
+    "post_claim": "Instagram will be blocked in Russia due to calls for violence against Russian soldiers",
+    "label": "true",
+    "verdict_quote": "Russia's state media watchdog Roskomnadzor says Instagram will be blocked in the country due to \"calls for violence\" against Russian soldiers.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.com/news/technology-60709208",
+    "review_title": "War in Ukraine: Instagram banned in Russia over 'calls to violence'",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig019",
+    "post_claim": "A video shows Palestinian crisis actors working overtime to fool the world during the Israel-Hamas war",
+    "label": "false",
+    "verdict_quote": "But that footage was from a film project that predated the war.",
+    "outlet": "PolitiFact",
+    "review_url": "https://www.politifact.com/article/2024/oct/04/one-year-after-oct-7-2023-attack-the-evolution-of",
+    "review_title": "One year after Oct. 7, 2023, attack: The evolution of misinformation about Israel and Gaza – PolitiFact",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig020",
+    "post_claim": "Meta is abandoning independent fact checkers on Facebook and Instagram, replacing them with user-generated community notes.",
+    "label": "misleading",
+    "verdict_quote": "Meta is abandoning the use of independent fact checkers on Facebook and Instagram, replacing them with X-style \"community notes\" where commenting on the accuracy of posts is left to users.",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.com/news/articles/cly74mpy8klo",
+    "review_title": "Meta to replace 'biased' fact-checkers with moderation by users",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig021",
+    "post_claim": "AI-generated images of Hong Kong buildings and vehicles wrapped in plastic were real preparations for Super Typhoon Ragasa",
+    "label": "false",
+    "verdict_quote": "The images circulating online are AI-generated",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.773L8ZQ",
+    "review_title": "AI-generated images misrepresented as Hong Kong's preparation for Super Typhoon Ragasa | Fact Check",
+    "instagram_urls": [
+      "https://www.instagram.com/p/DO7ykixj-jb"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig022",
+    "post_claim": "AI-generated videos and images falsely depict destruction from deadly floods in Nairobi, Kenya",
+    "label": "false",
+    "verdict_quote": "However, many of the videos and images circulating as evidence of the destruction are fabrications.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.A3WH3WE",
+    "review_title": "AI-generated visuals falsely depict destruction from deadly floods in Kenya | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig023",
+    "post_claim": "CBC published an AI-generated image of two women crying over Khamenei's death",
+    "label": "false",
+    "verdict_quote": "However, the claim that the picture was created using artificial intelligence is unfounded.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.99XY2KE",
+    "review_title": "Canadian broadcaster did not publish AI-generated image after Khamenei's death | Fact Check",
+    "instagram_urls": [
+      "https://www.instagram.com/p/DVWRr0FEetu",
+      "https://www.instagram.com/p/DVZVWLyjRcv"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig024",
+    "post_claim": "A photo shows Nigerian churchgoers attending a service armed with rifles",
+    "label": "false",
+    "verdict_quote": "However, the photo does not show churchgoers holding rifles.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.88HW7T3",
+    "review_title": "AI image of Nigerians taking rifles to church spreads online after recent attacks | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig025",
+    "post_claim": "The White House shared an AI-altered image showing a full flight watching Trump TV",
+    "label": "false",
+    "verdict_quote": "The image in the White House's posts promoting \"Trump TV,\" meanwhile, is a fake modified using artificial intelligence.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.D2EW8WE",
+    "review_title": "White House posts AI-altered image to promote 'Trump TV' | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig026",
+    "post_claim": "12 restaurants and food companies are supporting Trump's re-election",
+    "label": "false",
+    "verdict_quote": "A popular social media hoax is trying to link about a dozen chain restaurants to President Donald Trump’s re-election campaign.",
+    "outlet": "PolitiFact",
+    "review_url": "https://politifact.com/factchecks/2019/aug/26/instagram-posts/instagram-post-misconstrues-food-companies-support",
+    "review_title": "Instagram post misconstrues food companies’ support for Donald Trump – PolitiFact",
+    "instagram_urls": [
+      "https://www.instagram.com/p/B07ZYsNHig0"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig027",
+    "post_claim": "mRNA vaccines are being given to shrimp to alter human DNA upon consumption",
+    "label": "false",
+    "verdict_quote": "mRNA vaccines, which do not interact with human genes, cannot be absorbed through food consumption.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.B8879KE",
+    "review_title": "False claims about mRNA vaccination via shrimp consumption resurface | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig028",
+    "post_claim": "A Nigerian 'Yahoo boy' scammed Donald Trump out of $250,000",
+    "label": "misleading",
+    "verdict_quote": "But the claim is misleading; it was actually a donor aiming to contribute to the Trump-Vance Inaugural Committee who was scammed by an impostor that the US Federal Bureau of Investigation (FBI) traced to Nigeria.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.66DN6KE",
+    "review_title": "Posts claiming Nigerian ‘Yahoo boy’ scammed Trump out of $250k are misleading | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig029",
+    "post_claim": "Alexa says Hurricane Helene was artificially created to flood and devastate places and crash land values",
+    "label": "false",
+    "verdict_quote": "The claim is false. Alexa's response about cloud seeding does not prove Helene was fabricated using weather manipulation techniques. \"These answers are clearly incorrect and we are working to resolve this issue,\" an Amazon spokesperson told AFP on October 8.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.36JK783",
+    "review_title": "Amazon Alexa spreads false claim that Hurricane Helene was 'artificially created' | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig030",
+    "post_claim": "Hurricane Milton was geoengineered as a weapon",
+    "label": "false",
+    "verdict_quote": "This is false; experts say no technology exists to create or direct a weather phenomenon as large as a hurricane and none of the evidence cited online supports the conspiracy theory.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.36JM3UK",
+    "review_title": "Hurricane Milton spawns renewed weather modification conspiracy theories | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig031",
+    "post_claim": "Astronaut Karen Nyberg filmed a video in front of a green screen pretending to be in space",
+    "label": "false",
+    "verdict_quote": "We rate claims that this video shows Nyberg pretending to be in space False.",
+    "outlet": "PolitiFact",
+    "review_url": "https://politifact.com/factchecks/2022/sep/09/instagram-posts/no-isnt-video-nasa-astronaut-pretending-be-space",
+    "review_title": "No, this isn’t a video of a NASA astronaut pretending to be in space – PolitiFact",
+    "instagram_urls": [
+      "https://www.instagram.com/reel/CiL6f2-pcaJ"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig032",
+    "post_claim": "Former Astronaut Karen Nyberg Shows How NASA Fakes Space Flights",
+    "label": "false",
+    "verdict_quote": "But she is not the woman in the green screen video.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.62RB39E",
+    "review_title": "Video does not show astronaut exposing 'fake' life in space | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig033",
+    "post_claim": "There are no humans on the International Space Station",
+    "label": "false",
+    "verdict_quote": "We rate claims that no humans are in the space station False.",
+    "outlet": "PolitiFact",
+    "review_url": "https://politifact.com/factchecks/2023/feb/09/facebook-posts/houston-we-have-problem-misinformation-about-space",
+    "review_title": "Houston, we have a problem: Misinformation about the Space Station is spreading on Earth – PolitiFact",
+    "instagram_urls": [
+      "https://www.instagram.com/reel/CoTZqExsEbg"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig034",
+    "post_claim": "Biden said 'there is no climate problem'",
+    "label": "misleading",
+    "verdict_quote": "But the posts are missing context; a transcript of Biden's full remarks indicates he was being sarcastic, and that he made serious comments on climate change.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.32NH647",
+    "review_title": "Posts share Biden's 'climate crisis' remarks out of context | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig035",
+    "post_claim": "Trump said 'only criminals carry guns on our streets' after a protester was shot dead in Minneapolis",
+    "label": "false",
+    "verdict_quote": "But there is no evidence he responded to federal agents shooting an American man by posting 'only criminals carry guns on our streets.' The widespread image of the message circulating across social media is fake.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.942U9KE",
+    "review_title": "Fake Trump Truth on guns spreads after protester shot dead in Minnesota | Fact Check",
+    "instagram_urls": [
+      "https://www.instagram.com/p/DTk2g2dDEjT"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig036",
+    "post_claim": "Mark Carney's 2021 book 'Value(s)' calls for rigid controls of personal freedom and a world of severely constrained choice, and labels Western society morally rotten and corrupted by capitalism",
+    "label": "false",
+    "verdict_quote": "However, the quotes seen in the social media posts supposedly condemning capitalism and Western society are not pulled from the book.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.422C8CP",
+    "review_title": "Reviewer's quotes misrepresented as passage from Mark Carney's book | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig037",
+    "post_claim": "Abraham Lincoln said 'In the end, it's not the years in your life that counts, it's the life in your years.'",
+    "label": "false",
+    "verdict_quote": "There is no evidence that the 16th president ever said this",
+    "outlet": "BBC Verify",
+    "review_url": "https://www.bbc.com/news/uk-politics-38980742",
+    "review_title": "Did they really say that? - BBC News",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig038",
+    "post_claim": "A video shows a blue whale nursing its calf underwater",
+    "label": "false",
+    "verdict_quote": "The circulating video is \"ludicrous\", she said, adding what it depicts is \"completely implausible based on anatomy, physics, behaviour and physiology\"",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.C4YB7ZQ",
+    "review_title": "'Ludicrous' AI clip of nursing whale misleads online | Fact Check",
+    "instagram_urls": [
+      "https://www.instagram.com/reels/DYxng0klYy8"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig039",
+    "post_claim": "The new rabies shot is even more lethal",
+    "label": "false",
+    "verdict_quote": "The new rabies shot is even more lethal",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.87XT7G3",
+    "review_title": "Videos mislead on risks of RNA rabies vaccine for pets | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig040",
+    "post_claim": "A screenshot shows a false post shared on Instagram claiming that the United States had sent 700,000 adults missing in South Korea",
+    "label": "false",
+    "verdict_quote": "This article was updated to correct the date in paragraph 16",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/corrections",
+    "review_title": "Corrections | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig041",
+    "post_claim": "Tennessee bill that would ban the release of chemicals into the atmosphere is evidence chemtrails are real.",
+    "label": "false",
+    "verdict_quote": "We’ve debunked several claims about chemtrails, a conspiracy theory that claims the condensation trails behind aircraft are part of a secret, large-scale program to poison the atmosphere with toxic chemicals. Multiple government agencies and scientists say chemtrails are not real.",
+    "outlet": "PolitiFact",
+    "review_url": "https://www.politifact.com/factchecks/2024/mar/27/instagram-posts/a-tennessee-bill-doesnt-prove-chemtrails-are-real",
+    "review_title": "A Tennessee bill doesn’t prove ‘chemtrails’ are real – PolitiFact",
+    "instagram_urls": [
+      "https://www.instagram.com/p/C4vzwVSuDCj",
+      "https://www.instagram.com/reel/C4wjB4iN2m2"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig042",
+    "post_claim": "Alexander Gleason’s 19th Century “New Standard Map of the World” proves the earth is flat and Antarctica is an ice ring around the earth",
+    "label": "false",
+    "verdict_quote": "False. Gleason’s map is a depiction of the earth as a globe in a north-polar azimuthal equidistant projection and is not proof that the earth is flat.",
+    "outlet": "Reuters Fact Check",
+    "review_url": "https://www.reuters.com/article/fact-check/alexander-gleasons-map-of-the-world-does-not-prove-the-earth-is-flat-idUSL1N31S27S",
+    "review_title": "Fact Check: Alexander Gleason’s map of the world does not prove the earth is flat | Reuters",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig043",
+    "post_claim": "Elon Musk tweeted, “The world is flat.”",
+    "label": "false",
+    "verdict_quote": "We rate claims that Musk tweeted the world is flat False.",
+    "outlet": "PolitiFact",
+    "review_url": "https://politifact.com/factchecks/2023/mar/13/viral-image/earth-is-round-and-elon-musk-didnt-say-it-was-flat",
+    "review_title": "Earth is round and Elon Musk didn’t say it was flat – PolitiFact",
+    "instagram_urls": [
+      "https://www.instagram.com/p/CpqbHCqSt5g"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig044",
+    "post_claim": "A livestream showed Antarctica's 'Ice Wall' using Starlink internet",
+    "label": "false",
+    "verdict_quote": "But the Antarctic continent has been extensively explored and mapped by scientists and private tourist expeditions, and a review of the full video and the streamer's cruise itinerary shows the footage was actually filmed in Patagonia.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.974M763",
+    "review_title": "Livestream from Patagonia falsely claimed to show Antarctica's 'Ice Wall' | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig045",
+    "post_claim": "Piles of bodies in Sudan can be seen from Google Earth",
+    "label": "false",
+    "verdict_quote": "But a widely shared Google Earth image does not show piles of bodies in the city, contrary to false online posts. The visual is old and was taken in a town nearly 400 kilometres (250 miles) away, while an expert told AFP it depicts livestock, not human remains.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.867T8CV",
+    "review_title": "Sudan crisis posts misrepresent old Google Earth image | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig046",
+    "post_claim": "Acetaminophen during pregnancy can be associated with a very increased risk of autism",
+    "label": "misleading",
+    "verdict_quote": "But experts told AFP the president is incorrect in his assertions about the Amish community, where autism is observed though likely underdiagnosed due to the rejection of most modern medicine.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.76R9463",
+    "review_title": "Trump press conference fuels misinformation on Tylenol and autism | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig047",
+    "post_claim": "Fruit consumption is the reason Americans are overweight",
+    "label": "false",
+    "verdict_quote": "This is false; medical associations and experts recommended Americans eat more fruit, as research has consistently shown ingesting whole fruits has anti-obesity effects and many other health benefits.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.72V99CR",
+    "review_title": "Podcast amplifies false recommendations against fruit consumption | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig048",
+    "post_claim": "A video shows students panicking in an auditorium during the June 8, 2026 Philippine earthquake",
+    "label": "false",
+    "verdict_quote": "But the circulating video predates the June 2026 tremor.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.B6FH963",
+    "review_title": "Months-old Philippine earthquake video resurfaces after deadly tremor | Fact Check",
+    "instagram_urls": [],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig049",
+    "post_claim": "A video shows a building collapse in Peru after a 7.2-magnitude earthquake",
+    "label": "false",
+    "verdict_quote": "But the clip shows a quake in Colombia and not Peru.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.C67J8KE",
+    "review_title": "Video from Colombia quake falsely linked to Peru tremor | Fact Check",
+    "instagram_urls": [
+      "https://www.instagram.com/p/Db9dEwdjEz5"
+    ],
+    "collected": "2026-10-24"
+  },
+  {
+    "id": "ig050",
+    "post_claim": "FEMA is moving hurricane victims into long-term, fully furnished apartments under the Trump administration",
+    "label": "false",
+    "verdict_quote": "But the resettlement of hurricane victims into apartments rather than hotels is unrelated to these actions.",
+    "outlet": "AFP Fact Check",
+    "review_url": "https://factcheck.afp.com/doc.afp.com.36WH9BZ",
+    "review_title": "Posts falsely claim video shows hurricane relief under new Trump administration | Fact Check",
+    "instagram_urls": [
+      "https://www.instagram.com/p/DA9Wab1qXEc"
+    ],
+    "collected": "2026-10-24"
+  }
+]

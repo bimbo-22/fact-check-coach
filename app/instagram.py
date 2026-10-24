@@ -27,8 +27,8 @@ DESC_RE = re.compile(
 # "Some Name on Instagram: "caption""
 TITLE_RE = re.compile(r'^.*?\bon Instagram:\s*"(?P<cap>.*)"\s*$', re.S)
 
-NEEDS_TEXT_MSG = ("Instagram didn't let me read that post. Paste the caption (or what the Reel says) "
-                  "and I'll check it.")
+NEEDS_TEXT_MSG = ("Instagram doesn't let apps read posts from a link. Send me a screenshot of the post "
+                  "(quickest), or paste the caption (or what the Reel says) and I'll check it.")
 HASHTAGS_ONLY_MSG = "That caption is only hashtags. Type what the post or Reel claims and I'll check it."
 
 

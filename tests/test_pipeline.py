@@ -57,7 +57,7 @@ async def test_instagram_url_only_reads_caption_from_og_tags(pipeline):
 
 async def test_blocked_instagram_link_asks_for_text(pipeline):
     out = await pipeline.run("", "https://www.instagram.com/p/UNKNOWN123/")
-    assert out.needs_text and "Paste the caption" in out.note
+    assert out.needs_text and "screenshot" in out.note and "paste the caption" in out.note
 
 
 async def test_hashtags_only_caption_asks_for_text(pipeline):
