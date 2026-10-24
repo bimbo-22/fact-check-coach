@@ -10,7 +10,7 @@ from app.claim_extractor import extract_claim
 from app.config import Settings
 from app.fetcher import MAX_SOURCE_CHARS, Fetcher
 
-MIN_SOURCE_CHARS = 300  # paywall stubs (e.g. Reuters via search snippets) can't support a verdict
+MIN_SOURCE_CHARS = 80  # drop empty junk only: short snippets can still hold a verifiable sentence
 from app import comments as cm
 from app.instagram import HASHTAGS_ONLY_MSG, NEEDS_TEXT_MSG, find_instagram_url, get_caption, is_reel_url
 from app.instagram_graph import InstagramGraph

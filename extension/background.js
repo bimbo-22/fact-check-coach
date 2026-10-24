@@ -34,3 +34,30 @@ chrome.contextMenus.onClicked.addListener((info) => {
     openCoach(`imageUrl=${encodeURIComponent(info.srcUrl)}`);
   }
 });
+
+// Fact-checks requested from the Instagram feed (content.js). The API call is made here, from the
+// extension's origin, so the API only has to allow the extension, not instagram.com.
+const DEFAULT_API = "http://localhost:8000";
+
+async function apiBase() {
+  try { return (await chrome.storage.local.get("apiBase")).apiBase || DEFAULT_API; } catch (_) { return DEFAULT_API; }
+}
+
+async function post(path, body) {
+  const r = await fetch(`${await apiBase()}${path}`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
+  if (!r.ok) throw new Error(r.status === 410 || r.status === 404 ? "That check expired. Try again." : `The checker said ${r.status}.`);
+  return r.json();
+}
+
+chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
+  const run = msg.type === "fcc-start"
+    ? post("/check/start", { text: msg.text || "", image_url: msg.image_url || null, client: "extension" })
+    : msg.type === "fcc-reveal"
+      ? post("/check/reveal", { check_id: msg.check_id, guess: msg.guess })
+      : null;
+  if (!run) return false;
+  run.then((data) => reply({ data })).catch((e) => reply({ error: e.message || "The checker isn't reachable." }));
+  return true; // keep the channel open for the async reply
+});

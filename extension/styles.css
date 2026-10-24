@@ -97,3 +97,5 @@ button { border-radius: 999px; }
   background: linear-gradient(120deg, rgba(15, 98, 254, .08), rgba(232, 65, 127, .08)); }
 .note p { margin: 0 0 6px; }
 .note ol { margin: 0; padding-left: 20px; }
+.toggle { display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.toggle input { width: auto; }

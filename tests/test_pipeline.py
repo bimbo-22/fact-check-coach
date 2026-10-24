@@ -148,7 +148,7 @@ async def test_search_snippet_stubs_are_ignored(pipeline):
         name = "stub"
 
         async def search(self, claim):  # Reuters via search: a 140-character paywall stub
-            return [SearchResult("https://www.reuters.com/fact-check/stub/", "R", text="Subscribe to read. " * 7)]
+            return [SearchResult("https://www.reuters.com/fact-check/stub/", "R", text="Subscribe. " * 6)]
 
     pipeline.search = StubSearch()
     calls = pipeline.stance_llm.calls["stance"]

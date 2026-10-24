@@ -294,6 +294,8 @@ async function init() {
     if (stored.apiBase) apiBase = stored.apiBase;
   } catch (_) { /* storage unavailable: use default */ }
   $("api-base").value = apiBase;
+  try { $("auto-badges").checked = (await chrome.storage.local.get("autoBadges")).autoBadges !== false; } catch (_) {}
+  $("auto-badges").addEventListener("change", (e) => chrome.storage.local.set({ autoBadges: e.target.checked }));
 
   $("save-api").addEventListener("click", async () => {
     apiBase = $("api-base").value.replace(/\/+$/, "") || DEFAULT_API;

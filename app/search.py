@@ -92,7 +92,7 @@ class TavilySearch(SearchProvider):
         async with httpx.AsyncClient(timeout=8) as client:
             r = await client.post(self.URL, headers={"Authorization": f"Bearer {self.api_key}"},
                                   json={"query": f"{claim[:280]} fact check", "include_domains": domains,
-                                        "max_results": 15, "search_depth": "basic", "include_raw_content": True})
+                                        "max_results": 20, "search_depth": "basic", "include_raw_content": True})
             r.raise_for_status()
         return [SearchResult(url=x["url"], title=x.get("title", ""),
                              text=x.get("raw_content") or x.get("content") or None)

@@ -2,7 +2,7 @@
 
 > **A fact-checker that trains you to need it less.**
 
-Young people get their news from Instagram, TikTok and X, and the debunk is usually buried in the comments. Fact-Check Coach is a Telegram bot and a Chrome extension that **asks you to guess before it tells you anything**, then shows what six named news outlets say, using quotes that have been checked word for word against the source.
+Young people get their news from Instagram, TikTok and X, and the debunk is usually buried in the comments. Fact-Check Coach is a Telegram bot and a Chrome extension that **asks you to guess before it tells you anything**, then shows what 13 named fact-checkers and newsrooms say, using quotes that have been checked word for word against the source.
 
 Built for the IBM Responsible AI Hackathon challenge: *"Designing AI that makes us smarter, not more dependent."* Instagram is our primary test platform.
 
@@ -21,7 +21,7 @@ flowchart LR
       A[1 · Read caption<br/>og: tags, best effort<br/>strip username & likes] --> B[2 · Normalise<br/>+ coaching signals]
       B --> C{3 · Cache<br/>hash only}
       C -- miss --> D[4 · LLM: extract claim<br/>IBM Granite / watsonx]
-      D --> E[5 · Search 6 outlets<br/>+ Google Fact Check]
+      D --> E[5 · Search 13 named outlets<br/>+ Google Fact Check]
       E --> F[6 · Fetch pages]
       F --> G[7 · LLM: stance + exact quote]
       G --> H[8 · CODE: quote really in page?]
@@ -38,20 +38,36 @@ User ──guesses──────▶ POST /check/reveal ─▶ verdict, confi
 
 **The LLM never supplies facts.** It does two narrow reading jobs: pull the claim out of the post, and label each fetched article as *supports / contradicts / not mentioned* with an exact quote. Code then checks that quote against the real article text, and fixed rules decide the verdict.
 
-### The six outlets
+### The 13 outlets
 
-| Outlet | Type | Bias label* |
+| Outlet | Type | Bias label (AllSides)* |
 |---|---|---|
-| Reuters Fact Check | Wire service | Center |
-| AP Fact Check | Wire service | Left |
-| AFP Fact Check | Fact-checker | Center |
-| BBC Verify | Public broadcaster | Center |
-| Snopes | Fact-checker | Lean Left |
-| PolitiFact | Fact-checker | Lean Left |
+| Reuters Fact Check | Wire service | Center ✓ |
+| AP Fact Check | Wire service | Left (unconfirmed) |
+| AFP Fact Check (English + French) | Fact-checker | Center (unconfirmed) |
+| BBC Verify | Public broadcaster | Center ✓ |
+| Snopes | Fact-checker | Lean Left ✓ |
+| PolitiFact | Fact-checker | Lean Left ✓ |
+| Full Fact | Fact-checker (UK) | not checked yet |
+| FactCheck.org | Fact-checker (US) | not checked yet |
+| Lead Stories | Fact-checker (viral social posts) | not checked yet |
+| USA Today Fact Check | Newspaper | not checked yet |
+| France 24 Truth or Fake | Public broadcaster | not checked yet |
+| Africa Check | Fact-checker | not checked yet |
+| Science Feedback | Scientists (health, climate) | not checked yet |
 
-\*Placeholders from AllSides. **Re-check each one on allsides.com before the pitch** and update `bias_checked` in [app/sources.yaml](app/sources.yaml). The list leans centre to centre-left, and we say so openly. `GET /sources` publishes the list.
+\*✓ = seen on AllSides on 2026-10-24. Check the rest on allsides.com before the pitch and update [app/sources.yaml](app/sources.yaml); `GET /sources` publishes the list with each label's status.
 
-**Why only six?** A short, named list is something a user can actually judge, and every piece of evidence is traceable to it. The cost is coverage: more claims come back `unverified`.
+**Why a named list?** Every piece of evidence is traceable to an outlet the user can judge. We started with six and grew to 13 after measuring: coverage was the main reason claims came back `unverified`. One vote per outlet still means no single newsroom decides.
+
+### Models (IBM Consulting Advantage)
+
+| Job | Model | Why |
+|---|---|---|
+| Pull the claim out of a post, sort comments | IBM Granite 4H Small | Short, structured tasks |
+| Read each article: supports / contradicts / not mentioned + exact quote | Llama 3.3 70B (open weights) | On real AFP 5G debunks it found 4 of 4; Granite found 1 of 4 |
+| Copy the text off screenshots | Llama 4 Maverick (open weights) | Exact transcription in our tests, about 3 s |
+| Offline backup | Granite 4.1 8B via Ollama | No key, no internet |
 
 ### Verdict rules (deterministic, in [app/verdict.py](app/verdict.py))
 
@@ -138,7 +154,7 @@ The API address is configurable under *Settings* in the popup (default `http://l
 | Endpoint | Purpose |
 |---|---|
 | `GET /health` | Status, active providers, counters (checks, cache hits, rejected quotes) |
-| `GET /sources` | The six outlets with bias labels |
+| `GET /sources` | The outlets with bias labels and their status |
 | `POST /check/start` | `{text, url?, client}` → claim + question. **Never** includes the verdict. |
 | `POST /check/reveal` | `{check_id, guess}` → full result. 404 unknown id, 410 expired (15 min). |
 | `POST /check` | One-shot for scripts (front ends must use start → reveal) |
@@ -153,7 +169,7 @@ The API address is configurable under *Settings* in the popup (default `http://l
 | Jury criterion | What we built |
 |---|---|
 | **People stay engaged and in control** | Guess-first flow: `/check/start` cannot return a verdict (tested). A reflective question chosen from the post's signals, then guess feedback and one transferable tip. |
-| **Traceable sources** | Every verdict lists outlet, link and exact quote. Only six named outlets count. |
+| **Traceable sources** | Every verdict lists outlet, link and exact quote. Only the 13 named outlets count. |
 | **Explainable reasoning** | Published, deterministic rules with named constants. The LLM only reads. |
 | **Visible uncertainty** | `unverified` and `developing` are normal answers. Confidence is always shown. The disclaimer says "check them yourself". |
 | **Safeguards against hallucinated references** | Every LLM quote is matched against the fetched page (normalised, fuzzy ≥ 90). A fake quote is thrown out, its label is downgraded and it is counted in `rejected_quotes`, which the user can see. Tested with a planted hallucination. |
@@ -183,7 +199,7 @@ The API address is configurable under *Settings* in the popup (default `http://l
 
 ## Limitations
 
-- **Coverage:** six English-language, mostly US/UK outlets. Local or non-English claims will often be `unverified`.
+- **Coverage:** 13 mostly English-language (plus French) Western outlets. Many local or non-English claims will be `unverified`.
 - **Breaking news:** usually `developing` until at least two outlets report it, by design.
 - **Instagram access:** logged-out previews are often blocked, so the user may need to paste the caption.
 - **Images:** text in images is read; photos without text (e.g. a doctored picture) are not analysed. Video and audio are not analysed.
