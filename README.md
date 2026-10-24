@@ -4,6 +4,8 @@
 
 ![How it works](docs/architecture.png)
 
+📊 **Pitch deck:** [docs/rethink_bot-pitch.pptx](docs/rethink_bot-pitch.pptx)
+
 ## Use it
 
 | Where | How |
