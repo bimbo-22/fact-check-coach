@@ -27,8 +27,10 @@ log = logging.getLogger("fcc.pipeline")
 OPINION_NOTE = "This looks like an opinion. Opinions can't be fact-checked, but you can ask what facts they rest on."
 NOT_OUR_POST_MSG = ("I can only read comments on our own demo account's posts (that's Instagram's rule, and it keeps "
                     "other people's data out). Paste the comments or send a screenshot instead.")
-NO_TEXT_IN_IMAGE_MSG = ("I couldn't find any text in that image. If it's a photo or video still, "
-                        "type what the post claims and I'll check it.")
+NO_TEXT_IN_IMAGE_MSG = ("There's no text in this image for me to check, and I don't judge pictures myself: "
+                        "dramatic images like this are often AI-made or old. Check it yourself: 1) do a reverse "
+                        "image search (Google Lens or TinEye), 2) look for a news outlet's photo credit, 3) zoom in "
+                        "on details like hands, signs and lights. Or type what the post claims and I'll check that.")
 
 
 @dataclass

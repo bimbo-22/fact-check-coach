@@ -3,6 +3,9 @@ import json
 import logging
 import re
 
+URL_OR_MARKDOWN_RE = re.compile(r"https?://|www\.|!\[|\]\(|[*_#`]{2,}|^\s*[-*#]", re.M)
+NUMBER_RE = re.compile(r"\d[\d,.]*")
+
 from app.llm.base import LLMClient, LLMError
 
 log = logging.getLogger(__name__)
@@ -60,4 +63,16 @@ async def explain(llm: LLMClient, claim: str, verdict: str, quotes: list[str]) -
         out = (await llm.complete("explain", EXPLAIN_SYSTEM, user)).strip()
     except LLMError:
         return None
-    return out if 0 < len(out) <= 400 else None
+    return out if explanation_is_safe(out, quotes) else None
+
+
+def explanation_is_safe(text: str, quotes: list[str]) -> bool:
+    """The explanation may only rephrase verified quotes: no links, no markdown, no new numbers."""
+    if not 0 < len(text) <= 400 or URL_OR_MARKDOWN_RE.search(text):
+        log.warning("explanation rejected: link/markdown or length")
+        return False
+    allowed = set(NUMBER_RE.findall(" ".join(quotes)))
+    if any(n not in allowed for n in NUMBER_RE.findall(text)):
+        log.warning("explanation rejected: number not in the verified quotes")
+        return False
+    return True

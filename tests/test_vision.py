@@ -38,14 +38,14 @@ async def test_screenshot_only_post_is_checked(pipeline):
     out = await pipeline.run("", image=HEADLINE)
     assert out.evidence.verdict == "false"
     assert out.signals.image_mentioned
-    assert out.question.startswith("It's a screenshot of a headline")
+    assert out.question.startswith("It's a screenshot.")
     assert pipeline.stats["images_read"] == 1
 
 
 async def test_image_without_text_asks_for_text(pipeline):
     blank = (FIXTURES / "images" / "comments_5g.png").read_bytes()[:-1] + b"\x00"  # unknown to the mock
     out = await pipeline.run("", image=blank)
-    assert out.needs_text and "couldn't find any text" in out.note
+    assert out.needs_text and "reverse image search" in out.note
 
 
 def test_api_accepts_screenshot(client):

@@ -9,7 +9,7 @@ def pick_question(s: Signals) -> str:
     if s.is_reel:
         return "Who's speaking in this Reel, and do they say where their info comes from?"
     if s.image_mentioned:
-        return "It's a screenshot of a headline. Did the outlet really publish it? How could you tell?"
+        return "It's a screenshot. Who made the original, and is the source named anywhere in it?"
     if s.link_in_bio:
         return "It says \"link in bio\". Would you click through before sharing? What do you expect is behind it?"
     if s.emotional:
@@ -25,7 +25,8 @@ def pick_tip(s: Signals, verdict: str) -> str:
     if s.old_date:
         return f"Check the date: this is from {s.old_year}. Old stories get reshared as if they're new."
     if s.image_mentioned:
-        return "Search the headline: if a real outlet published it, you'll find it on their own site."
+        return ("Find the original: search the exact words in quotes, or do a reverse image search. "
+                "Screenshots lose who posted it first and when.")
     if s.is_reel:
         return "Reels cut out context. Look for where the clip or claim originally came from."
     if s.link_in_bio:

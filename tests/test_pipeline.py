@@ -30,7 +30,7 @@ async def test_true_claim_from_headline_screenshot(pipeline):
     out = await pipeline.run(post("true_eiffel")["caption"])
     assert (out.evidence.verdict, out.evidence.confidence) == ("true", "high")
     assert "screenshot" in out.question.lower()
-    assert out.tip.startswith("Search the headline")
+    assert out.tip.startswith("Find the original")
 
 
 async def test_opinion(pipeline):
@@ -117,3 +117,24 @@ async def test_unreachable_claimreview_is_read_from_its_structured_data(pipeline
     ev = (await pipeline.run(post("false_5g")["caption"])).evidence
     assert (ev.verdict, ev.agreement.contradicts) == ("false", 1)
     assert ev.sources[0].rating == "False" and ev.sources[0].is_claimreview
+
+
+def test_explanation_guard_blocks_links_markdown_and_new_numbers():
+    from app.stance import explanation_is_safe
+    quotes = ["An estimated 1,500 shops and businesses were looted and destroyed."]
+    assert explanation_is_safe("About 1,500 shops were looted, according to the outlets.", quotes)
+    assert not explanation_is_safe("![chart](https://example.com/c.png) Shops were looted.", quotes)
+    assert not explanation_is_safe("See www.example.com for more.", quotes)
+    assert not explanation_is_safe("Over 3,000 shops were looted.", quotes)          # number not in quotes
+    assert not explanation_is_safe("**Shops** were looted.", quotes)
+
+
+async def test_explanation_with_invented_link_falls_back_to_template(pipeline):
+    class LinkyLLM(type(pipeline.llm)):
+        async def _complete(self, task, system, user):
+            if task == "explain":
+                return "![Looted](https://example.com/chart.png) It is false."
+            return await super()._complete(task, system, user)
+    pipeline.llm = LinkyLLM(FIXTURES)
+    ev = (await pipeline.run(post("false_5g")["caption"])).evidence
+    assert "http" not in ev.explanation and ev.explanation.startswith("4 of the 4 trusted outlets")

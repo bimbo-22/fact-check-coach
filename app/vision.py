@@ -148,7 +148,7 @@ class MockVision(Vision):
 
     def __init__(self, fixtures_dir: Path) -> None:
         self.texts = {}
-        for img in (fixtures_dir / "images").glob("*.png"):
+        for img in [*(fixtures_dir / "images").glob("*.png"), *(fixtures_dir / "images").glob("*.jpg")]:
             sidecar = img.with_suffix(".txt")
             if sidecar.exists():
                 self.texts[hashlib.sha256(img.read_bytes()).hexdigest()] = sidecar.read_text()

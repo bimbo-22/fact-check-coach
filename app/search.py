@@ -91,7 +91,7 @@ class TavilySearch(SearchProvider):
         domains = [d for o in all_outlets() for d in o.domains]
         async with httpx.AsyncClient(timeout=8) as client:
             r = await client.post(self.URL, headers={"Authorization": f"Bearer {self.api_key}"},
-                                  json={"query": claim[:300], "include_domains": domains,
+                                  json={"query": f"{claim[:280]} fact check", "include_domains": domains,
                                         "max_results": 15, "search_depth": "basic", "include_raw_content": True})
             r.raise_for_status()
         return [SearchResult(url=x["url"], title=x.get("title", ""),
@@ -111,7 +111,7 @@ class BraveSearch(SearchProvider):
         async with httpx.AsyncClient(timeout=8) as client:
             r = await client.get(self.URL, headers={"X-Subscription-Token": self.api_key,
                                                     "Accept": "application/json"},
-                                 params={"q": f"{claim[:250]} ({sites})", "count": 20, "extra_snippets": "true"})
+                                 params={"q": f"{claim[:230]} fact check ({sites})", "count": 20, "extra_snippets": "true"})
             r.raise_for_status()
         return [SearchResult(url=x["url"], title=x.get("title", ""),
                              text=" ".join([x.get("description", ""), *x.get("extra_snippets", [])]).strip() or None)

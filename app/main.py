@@ -1,9 +1,11 @@
 """FastAPI app. Front ends use /check/start → /check/reveal; /check is the one-shot for scripts."""
 import logging
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.coach import guess_feedback
 from app.config import Settings, get_settings
@@ -23,6 +25,7 @@ from app.vision import ImageError, decode_image, make_vision
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logging.getLogger("httpx").setLevel(logging.WARNING)  # httpx logs full URLs, incl. API keys
 log = logging.getLogger("fcc.api")
+WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
 
 def build_pipeline(settings: Settings) -> Pipeline:
@@ -68,6 +71,11 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         p: Pipeline = app.state.pipeline
         return {"status": "ok", "llm_provider": p.llm.name, "search_provider": p.search.name,
                 "vision_provider": p.vision.name if p.vision else None, "stats": p.stats}
+
+    @app.get("/app-config")
+    async def app_config() -> dict:
+        """Public, non-secret settings the landing page needs."""
+        return {"telegram_bot": settings.telegram_bot_username or None}
 
     @app.get("/sources")
     async def sources() -> dict:
@@ -121,6 +129,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                  result.summary.claims, result.summary.misinformation)
         return result
 
+    if WEB_DIR.exists():  # landing page + try-it app at "/" (mounted last so API routes win)
+        app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
     return app
 
 

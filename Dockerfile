@@ -8,6 +8,7 @@ RUN pip install -r requirements.txt
 COPY app ./app
 COPY bot ./bot
 COPY scripts ./scripts
+COPY web ./web
 COPY tests ./tests
 RUN useradd --create-home --uid 10001 coach && chown -R coach /app
 USER coach

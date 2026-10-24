@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     brave_api_key: str = ""
 
     telegram_bot_token: str = ""
+    telegram_bot_username: str = ""  # shown on the landing page, e.g. beyond_insta_bot
     api_base_url: str = "http://localhost:8000"
 
     check_ttl_seconds: int = 15 * 60

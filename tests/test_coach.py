@@ -38,7 +38,7 @@ def test_misleading_feedback():
 
 @pytest.mark.parametrize("signals,start", [
     (Signals(old_date=True, old_year=2019), "Check the date: this is from 2019"),
-    (Signals(image_mentioned=True), "Search the headline"),
+    (Signals(image_mentioned=True), "Find the original"),
     (Signals(is_reel=True), "Reels cut out context"),
     (Signals(link_in_bio=True), "\"Link in bio\""),
     (Signals(emotional=True), "Notice how it makes you feel"),

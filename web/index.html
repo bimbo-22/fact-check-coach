@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fact-Check Coach</title>
+  <meta name="description" content="A fact-checker that trains you to need it less. Send an Instagram post or screenshot, guess first, then see what six named newsrooms say." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="app.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">🧭</span> Fact-Check Coach</a>
+    <nav aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#try">Try it</a>
+      <a href="#sources">Our sources</a>
+      <a href="#trust">Why trust it</a>
+    </nav>
+    <a class="btn btn-small btn-telegram" data-telegram href="#try">Open in Telegram</a>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">Built for Instagram · IBM Responsible AI Hackathon</p>
+        <h1>A fact-checker that trains you to <span class="grad">need it less.</span></h1>
+        <p class="lede">Send a post or a screenshot. <strong>Guess first.</strong> Then see what six named newsrooms say, with every quote checked word for word against the source.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#try">Try it with a screenshot</a>
+          <a class="btn btn-ghost" data-telegram href="#try">Use it in Telegram</a>
+        </div>
+        <ul class="stats" aria-label="Why this matters">
+          <li><b>52%</b><span>of 18–24s get news mainly from social, video or AI</span></li>
+          <li><b>42%</b><span>of 18–24s use Instagram for news every week</span></li>
+          <li><b>0</b><span>facts our AI is allowed to make up</span></li>
+        </ul>
+        <p class="source-note">Source: Reuters Institute, Digital News Report 2026.</p>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="phone">
+          <img src="examples/looting-video.jpg" alt="" />
+          <div class="chip chip-q">🤔 Before I show you: who posted this?</div>
+          <div class="chip chip-v"><span class="dot dot-false"></span> Check the source · 6 outlets</div>
+        </div>
+        <img class="float float-1" src="examples/protest-meme.jpg" alt="" />
+        <img class="float float-2" src="examples/paris-burning.jpg" alt="" />
+      </div>
+    </section>
+
+    <!-- HOW -->
+    <section id="how" class="section">
+      <h2>Think first. Then check.</h2>
+      <p class="section-lede">Most fact-checkers hand you an answer, and you come back for the next one. We make you part of the check.</p>
+      <ol class="steps">
+        <li class="step">
+          <span class="step-n">1</span>
+          <h3>Share the post</h3>
+          <p>A screenshot, a caption or a link. Instagram doesn't let apps read posts, so a screenshot is the quickest way. We copy only the text off it.</p>
+        </li>
+        <li class="step">
+          <span class="step-n">2</span>
+          <h3>Make your guess</h3>
+          <p>True, false or not sure? Plus one question to think about, like <em>"who posted this, and do they cite a source?"</em></p>
+        </li>
+        <li class="step">
+          <span class="step-n">3</span>
+          <h3>See the evidence</h3>
+          <p>What six named outlets say, with checked quotes and links. Then compare it with your guess, and get one tip you can use next time.</p>
+        </li>
+        <li class="step step-accent">
+          <span class="step-n">+</span>
+          <h3>Check the comments</h3>
+          <p>The debunk is often buried in the comments. We label opinions, flag misinformation and show which comment the sources back up.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- TRY IT -->
+    <section id="try" class="section try">
+      <div class="try-head">
+        <h2>Try it now</h2>
+        <p class="section-lede">No account, no sign-up. Nothing you send is stored.</p>
+      </div>
+
+      <div class="app-card" id="app">
+        <div class="tabs" role="tablist" aria-label="What to check">
+          <button class="tab is-active" role="tab" aria-selected="true" data-mode="post">Check a post</button>
+          <button class="tab" role="tab" aria-selected="false" data-mode="comments">Check the comments</button>
+        </div>
+
+        <!-- INPUT -->
+        <div class="pane" id="pane-input">
+          <label class="drop" id="drop" tabindex="0">
+            <input type="file" id="file" accept="image/png,image/jpeg,image/webp" hidden />
+            <div class="drop-inner" id="drop-inner">
+              <div class="drop-icon" aria-hidden="true">⬆</div>
+              <p class="drop-title" id="drop-title">Drop a screenshot here</p>
+              <p class="drop-sub">or click to choose one · or paste with Ctrl/⌘+V</p>
+            </div>
+            <img id="preview" class="preview" alt="Your screenshot" hidden />
+          </label>
+          <div class="or"><span>or paste text</span></div>
+          <textarea id="text" rows="3" maxlength="4000" placeholder="Paste a caption, e.g. “Scientists CONFIRM 5G towers make people sick!!! link in bio”"></textarea>
+          <div class="input-actions">
+            <button class="btn btn-ghost btn-small" id="clear" type="button" hidden>Clear</button>
+            <button class="btn btn-primary" id="go" type="button">Check it</button>
+          </div>
+
+          <div class="examples">
+            <p class="examples-title">No screenshot? Try one of these real Instagram posts</p>
+            <div class="example-row">
+              <button class="example" data-example="examples/looting-video.jpg" data-kind="post">
+                <img src="examples/looting-video.jpg" alt="Post: a woman crying, captioned as a liberal woman whose store was looted by migrants in France" />
+                <span>“Liberal woman after migrant looters take her store”</span>
+              </button>
+              <button class="example" data-example="examples/paris-burning.jpg" data-kind="post">
+                <img src="examples/paris-burning.jpg" alt="Post: an image of Paris with fires and smoke everywhere" />
+                <span>Paris on fire</span>
+              </button>
+              <button class="example" data-example="examples/protest-meme.jpg" data-kind="post">
+                <img src="examples/protest-meme.jpg" alt="Post: pink panther costume at a French protest with a water cannon" />
+                <span>“The French protests are cinema”</span>
+              </button>
+            </div>
+            <p class="examples-note">Usernames, profile pictures and faces are blurred by us. The checker removes usernames anyway.</p>
+          </div>
+        </div>
+
+        <!-- WORKING -->
+        <div class="pane" id="pane-working" hidden>
+          <div class="working">
+            <div class="spinner" aria-hidden="true"></div>
+            <ol class="work-steps" id="work-steps"></ol>
+          </div>
+        </div>
+
+        <!-- GUESS -->
+        <div class="pane" id="pane-guess" hidden>
+          <p class="kicker">The claim</p>
+          <p class="claim" id="claim"></p>
+          <div class="question" id="question"></div>
+          <p class="kicker">Your guess first</p>
+          <div class="guesses">
+            <button class="guess g-true" data-guess="true">True</button>
+            <button class="guess g-false" data-guess="false">False</button>
+            <button class="guess g-unsure" data-guess="not_sure">Not sure</button>
+          </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="pane" id="pane-result" hidden></div>
+
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section id="sources" class="section">
+      <h2>Six named outlets. One vote each.</h2>
+      <p class="section-lede">Only these newsrooms count as evidence. Ten articles from one outlet still count once, and a published fact-check counts double. We show their political lean openly.</p>
+      <div class="outlets" id="outlets"></div>
+      <p class="fineprint" id="bias-note">Bias labels from AllSides, which rates perceived political lean, not accuracy.</p>
+    </section>
+
+    <!-- TRUST -->
+    <section id="trust" class="section trust">
+      <h2>Why you can trust it, and where you shouldn't</h2>
+      <div class="trust-grid">
+        <div class="trust-card"><h3>🧠 The AI never decides</h3><p>It only reads: it pulls out the claim and says whether each article agrees. The verdict comes from fixed rules anyone can audit.</p></div>
+        <div class="trust-card"><h3>🛡️ Every quote is checked</h3><p>If the AI quotes an article, code checks the quote is really there. Made-up quotes are thrown out and counted, and you can see the count.</p></div>
+        <div class="trust-card"><h3>❓ “Unsure” is a real answer</h3><p>“Unverified” and “still developing” are normal results, and confidence is always shown. Breaking news waits for at least two outlets.</p></div>
+        <div class="trust-card"><h3>🔒 Nothing is kept</h3><p>No accounts, no stored posts, screenshots, usernames or chats. The cache keeps only a hash of the claim.</p></div>
+        <div class="trust-card"><h3>💬 Opinions aren't “fact-checked”</h3><p>In posts and in comments, opinions are labelled as opinions, not judged as true or false.</p></div>
+        <div class="trust-card"><h3>⚡ Small model, on purpose</h3><p>We never ask the model to know facts, so a small open model (IBM Granite) is enough. That uses less energy and costs less.</p></div>
+      </div>
+      <div class="limits">
+        <h3>Honest limits</h3>
+        <ul>
+          <li>Six English-language, mostly US/UK outlets, so local or non-English claims often come back “unverified”.</li>
+          <li>We read the <b>text</b> in screenshots. A photo or video without text (like an AI-made image) isn't analysed yet.</li>
+          <li>Instagram doesn't let apps read posts from a link, so a screenshot or the pasted caption is needed.</li>
+          <li>Our outlets lean centre to centre-left, and we say so.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section cta-final">
+      <h2>Get better at spotting it yourself.</h2>
+      <p>Use it where you scroll: share any post to the bot on Telegram.</p>
+      <a class="btn btn-primary btn-telegram" data-telegram href="#try">Open @<span data-telegram-name>the bot</span> in Telegram</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p><b>Fact-Check Coach</b> · IBM Responsible AI Hackathon prototype</p>
+    <p>Based only on the sources shown. Always check them yourself.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

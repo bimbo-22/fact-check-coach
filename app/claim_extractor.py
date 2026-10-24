@@ -13,9 +13,16 @@ Reply with ONLY a JSON object, no prose, no code fences:
 {"claim": string, "checkable": boolean, "breaking_news": boolean, "language": string}
 
 Rules:
-- "claim": the single main factual claim, restated neutrally in one sentence. Do not add facts,
-  names, numbers or context that are not in the post. Do not say whether it is true.
-- "checkable": false if the post is an opinion, a joke, a question, or has no factual claim.
+- "claim": the single claim the post most wants people to believe, restated neutrally in one sentence.
+  Prefer the specific claim about who did what, what a person said, or what an image shows over general
+  background context. Example: a post saying "Liberal woman cries after migrant looters take her store"
+  next to "businesses are being looted" → the claim is "Migrants looted the store of a woman who supported
+  immigration", not "businesses are being looted". Do not add facts, names, numbers or context that are
+  not in the post. Do not say whether it is true.
+- "checkable": false ONLY if the post is an opinion, a feeling, a joke, a question, or makes no factual
+  claim at all. A claim that sounds absurd, conspiratorial or obviously false is still checkable
+  ("5G spreads viruses", "NASA fakes space flights"), and so is a description of what a photo or video
+  shows ("A video shows a shark on a flooded highway").
 - "breaking_news": true if the post presents the claim as something happening right now.
 - "language": ISO 639-1 code of the post."""
 
