@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .env
 .pytest_cache/
+
+# presentation material lives outside the repo
+*.pptx
+*.pdf
+*.zip

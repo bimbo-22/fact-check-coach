@@ -114,7 +114,7 @@ The debunk is often buried in the comments, next to the misinformation. Paste th
 
 Claims are always restated positively, with a flag for whether the comment *asserts* or *denies* them. "There's no evidence 5G makes you sick" therefore checks the same claim as the post (cache hit) and is correctly marked *backed*. Language models often get negation wrong, and this design removes that failure mode.
 
-For posts on **our own demo account**, the real comment section is read through the official Instagram Graph API (`/comments/from-post`). It's never accessed with a password and never on other accounts, and usernames are never requested. See [credentials.md](credentials.md).
+For posts on **our own demo account**, the real comment section is read through the official Instagram Graph API (`/comments/from-post`). It's never accessed with a password and never on other accounts, and usernames are never requested. Keys go in `.env` (see [.env.example](.env.example)).
 
 ## Run it
 
