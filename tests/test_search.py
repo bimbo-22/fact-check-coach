@@ -88,3 +88,17 @@ async def test_ollama_provider_requests_json_for_reading_tasks():
     sent = route.calls[0].request.content.decode()
     assert '"format":"json"' in sent.replace(" ", "") and "granite4.1:8b" in sent
     assert "not_mentioned" in out
+
+
+@respx.mock
+async def test_ica_provider_openai_shape_and_no_temperature_for_claude():
+    from app.llm.ica import IcaLLM
+
+    url = "https://api.servicesessentials.ibm.com/v1/chat-models/chat/completions"
+    route = respx.post(url).mock(return_value=httpx.Response(200, json={
+        "choices": [{"index": 0, "message": {"role": "assistant", "content": "{}"}}]}))
+    await IcaLLM("sk-test", "https://api.servicesessentials.ibm.com/v1", "ibm/granite-4-h-small").complete("t", "s", "u")
+    await IcaLLM("sk-test", "https://api.servicesessentials.ibm.com/v1", "claude-haiku-5-5").complete("t", "s", "u")
+    granite, claude = (c.request for c in route.calls)
+    assert granite.headers["Authorization"] == "Bearer sk-test"
+    assert b'"temperature"' in granite.content and b'"temperature"' not in claude.content

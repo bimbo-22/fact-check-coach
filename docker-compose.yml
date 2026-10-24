@@ -4,6 +4,9 @@
 x-env: &env
   LLM_PROVIDER: ${LLM_PROVIDER:-mock}
   SEARCH_PROVIDER: ${SEARCH_PROVIDER:-mock}
+  ICA_API_KEY: ${ICA_API_KEY:-}
+  ICA_BASE_URL: ${ICA_BASE_URL:-https://api.servicesessentials.ibm.com/v1}
+  ICA_MODEL: ${ICA_MODEL:-ibm/granite-4-h-small}
   OLLAMA_URL: ${OLLAMA_DOCKER_URL:-http://host.docker.internal:11434}
   OLLAMA_MODEL: ${OLLAMA_MODEL:-granite4.1:8b}
   WATSONX_API_KEY: ${WATSONX_API_KEY:-}

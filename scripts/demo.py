@@ -104,8 +104,8 @@ async def run(fixtures: Path, cases: list, llm_provider: str) -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Offline Fact-Check Coach demo")
     ap.add_argument("--fixtures", type=Path, help="folder recorded by scripts/record_fixtures.py")
-    ap.add_argument("--llm", default="mock", choices=["mock", "ollama"],
-                    help="ollama = real open-source Granite reading the saved pages (still no internet)")
+    ap.add_argument("--llm", default="mock", choices=["mock", "ollama", "ica"],
+                    help="ollama = local open-source Granite; ica = IBM-hosted model via the ICA API (needs ICA_API_KEY)")
     args = ap.parse_args()
     if args.fixtures:
         asyncio.run(run(args.fixtures, recorded_cases(args.fixtures), args.llm))

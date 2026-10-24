@@ -12,7 +12,7 @@ FIXTURES_DIR = ROOT / "tests" / "fixtures"
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    llm_provider: Literal["mock", "ollama", "watsonx", "anthropic"] = "mock"
+    llm_provider: Literal["mock", "ica", "ollama", "watsonx", "anthropic"] = "mock"
     # google_factcheck = ClaimReviews only; tavily / brave = ClaimReviews (if key set) + web search
     search_provider: Literal["mock", "google_factcheck", "tavily", "brave"] = "mock"
 
@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     watsonx_project_id: str = ""
     watsonx_url: str = "https://us-south.ml.cloud.ibm.com"
     watsonx_model_id: str = "ibm/granite-3-8b-instruct"
+
+    # IBM Consulting Advantage Developer API (OpenAI-compatible, IBM-hosted models incl. Granite)
+    ica_api_key: str = ""
+    ica_base_url: str = "https://api.servicesessentials.ibm.com/v1"
+    ica_model: str = "ibm/granite-4-h-small"
 
     # Open-source Granite on this machine (ollama pull granite4.1:8b)
     ollama_url: str = "http://localhost:11434"

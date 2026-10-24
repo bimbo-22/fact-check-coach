@@ -59,6 +59,12 @@ async def main() -> None:
     except httpx.HTTPError:
         line(None, "ollama", f"not running at {s.ollama_url}")
 
+    if s.ica_api_key:
+        from app.llm.ica import IcaLLM
+        await check_llm(f"ica ({s.ica_model})", lambda: IcaLLM(s.ica_api_key, s.ica_base_url, s.ica_model))
+    else:
+        line(None, "ica", "ICA_API_KEY not set")
+
     if s.watsonx_api_key and s.watsonx_project_id:
         from app.llm.watsonx import WatsonxLLM
         await check_llm("watsonx", lambda: WatsonxLLM(s.watsonx_api_key, s.watsonx_project_id,

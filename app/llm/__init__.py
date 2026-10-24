@@ -3,6 +3,10 @@ from app.llm.base import LLMClient, LLMError
 
 
 def make_llm(settings: Settings) -> LLMClient:
+    if settings.llm_provider == "ica":
+        from app.llm.ica import IcaLLM
+
+        return IcaLLM(settings.ica_api_key, settings.ica_base_url, settings.ica_model)
     if settings.llm_provider == "ollama":
         from app.llm.ollama import OllamaLLM
 
